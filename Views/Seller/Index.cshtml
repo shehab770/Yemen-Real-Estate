@@ -1,0 +1,233 @@
+﻿@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "لوحة الوكيل";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    @await Html.PartialAsync("~/Views/Shared/_AgnetDahboardPartial.cshtml", Model)
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                 
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">لوحة التحكم</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">لوحة التحكم</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@Model.Products?.Count(p => p.isAccepted == PropertyStatus.Approved)</h3>
+                            <p>العقارات المعتمدة</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <a href="/Seller/ShowProperties?status=Approved" class="small-box-footer">عرض العقارات<i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@Model.Products?.Count(p => p.IsFeatured)</h3>
+                            <p>العقارات المميزة</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <a href="/Seller/ShowProperties?featured=true" class="small-box-footer">عرض المميزة <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@Model.Products?.Count</h3>
+                            <p>إجمالي العقارات</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <a href="/Seller/ShowProperties" class="small-box-footer">عرض الكل <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-6">
+                    <!-- small box -->
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@Model.Products?.Count(p => p.isAccepted == PropertyStatus.Rejected)</h3>
+                            <p>العقارات المرفوضة</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <a href="/Seller/ShowProperties?status=Rejected" class="small-box-footer">عرض المرفوضة <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <!-- /.row -->
+
+            <!-- Main row -->
+            <div class="row">
+                <!-- Left col -->
+                <section class="col-lg-7 connectedSortable">
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-primary">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-bolt"></i> إجراءات سريعة
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a href="/Product/Add" class="btn btn-primary btn-block mb-3">
+                                        <i class="fas fa-plus"></i> إضافة عقار جديد
+                                    </a>
+                                    <a href="/Seller/SellerProfile" class="btn btn-info btn-block mb-3">
+                                        <i class="fas fa-user-edit"></i> تعديل الملف الشخصي
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                   
+                                    <a href="/Seller/ShowArticles" class="btn btn-success btn-block mb-3">
+                                        <i class="fas fa-newspaper"></i> إدارة المقالات
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-info">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-history"></i> الأنشطة الأخيرة
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                @if(Model.Products != null)
+                                {
+                                    @foreach (var product in Model.Products.OrderByDescending(p => p.UpdatedAt).Take(5))
+                                    {
+                                        <div class="time-label">
+                                            <span class="bg-info">@product.UpdatedAt?.ToString("MMM dd")</span>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-home bg-primary"></i>
+                                            <div class="timeline-item">
+                                                <span class="time"><i class="fas fa-clock"></i> @product.UpdatedAt?.ToString("HH:mm")</span>
+                                                <h3 class="timeline-header">تم تحديث العقار</h3>
+                                                <div class="timeline-body">
+                                                    @product.Address
+                                                </div>
+                                                <div class="timeline-footer">
+                                                    <a href="/Product/PropertyDetails/@product.ProductId" class="btn btn-primary btn-sm">عرض التفاصيل</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                     }
+                                }else
+                                {
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> لا توجد أنشطة حديثة.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right col -->
+                <section class="col-lg-5 connectedSortable">
+                    <!-- Property Status Chart -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-success">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-chart-pie"></i> حالة العقار
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="propertyStatusChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+             
+                </section>
+            </div>
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function () {
+            // Property Status Chart
+            var ctx = document.getElementById('propertyStatusChart').getContext('2d');
+            var propertyStatusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['معتمد', 'مميز', 'مرفوض'],
+                    datasets: [{
+                        data: [
+                            @Model.Products?.Count(p => p.isAccepted == PropertyStatus.Approved && p.SellerId == Model.User?.UserId) ?? 0,
+                            @Model.Products?.Count(p => p.IsFeatured && p.SellerId == Model.User?.UserId) ?? 0,
+                            @Model.Products?.Count(p => p.isAccepted == PropertyStatus.Rejected && p.SellerId == Model.User?.UserId) ?? 0
+                        ],
+                        backgroundColor: [
+                            '#28a745',  // Green for Approved
+                            '#ffc107',  // Yellow for Featured
+                            '#dc3545'   // Red for Rejected
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

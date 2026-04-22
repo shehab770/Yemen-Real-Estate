@@ -1,0 +1,73 @@
+@model webProgramming.Models.ViewModels
+@{
+    ViewData["Title"] = "الملف الشخصي للمستخدم";
+    Layout = "Admin_Layout";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-user"></i> الملف الشخصي @if(Model.Seller?.Role == UserRole.Buyer){<span>للمشتري</span>}else{<span>للبائع</span>}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Admin/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الملف الشخصي</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-primary card-outline">
+                <div class="card-body box-profile">
+                    <div class="text-center">
+                        <img class="profile-user-img img-fluid img-circle" src="@Model.Seller?.Image" alt="صورة المستخدم">
+                    </div>
+                    <h3 class="profile-username text-center">@Model.Seller?.Name</h3>
+                    <p class="text-muted text-center">
+                        @(Model.Seller?.Role == UserRole.Buyer ? "مشتري" : "بائع")
+                    </p>
+                    <ul class="list-group list-group-unbordered mb-3">
+                        <li class="list-group-item">
+                            <b>البريد الإلكتروني</b> <a class="float-right">@Model.Seller?.Email</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>رقم الجوال</b> <a class="float-right">@Model.Seller?.Phone</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>تاريخ التسجيل</b> <a class="float-right">@Model.Seller?.CreatedAt.ToString("yyyy-MM-dd")</a>
+                        </li>
+                    </ul>
+                    <h4>الوثائق والمستندات</h4>
+                    @if (!string.IsNullOrEmpty(Model.Seller?.BusinessDocuments))
+                    {
+                        <div class="mb-3">
+                            <img src="@Model.Seller.BusinessDocuments" alt="وثيقة المستخدم" class="img-fluid img-thumbnail" style="max-width:300px;">
+                        </div>
+                    }
+                    else
+                    {
+                        <p>لا توجد وثائق مرفوعة.</p>
+                    }
+                    @if(Model.Seller?.Role == UserRole.Seller && Model.Products != null && Model.Products.Any())
+                    {
+                        <hr />
+                        <h4>عقارات البائع</h4>
+                        <ul class="list-group">
+                        @foreach(var property in Model.Products)
+                        {
+                            <li class="list-group-item">
+                                <b>@property.Title</b> - <span>@property.Price</span>
+                            </li>
+                        }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

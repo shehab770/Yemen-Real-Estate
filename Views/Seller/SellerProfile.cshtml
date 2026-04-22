@@ -1,0 +1,267 @@
+@model webProgramming.Models.ViewModels
+@{
+    ViewData["Title"] = "ملف البائع";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    @await Html.PartialAsync("~/Views/Shared/_AgnetDahboardPartial.cshtml", Model)
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>تسجيل الخروج</p>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-user"></i> ملفي الشخصي</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الملف الشخصي</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle"src="@Model.User.Image" alt="@Model.User.Name">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.User.Name</h3>
+                            <p class="text-muted text-center">وكيل عقارات</p>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>العقارات</b> <a class="float-right">@ViewBag.PropertyCount</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>المعتمدة</b> <a class="float-right">@ViewBag.ApprovedCount</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>المعلقة</b> <a class="float-right">@ViewBag.PendingCount</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Office Photo -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">صورة المكتب</h3>
+                        </div>
+                        <div class="card-body">
+                            <img class="img-fluid" src="@Model.User.OfficePhoto" alt="صورة المكتب">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills profile-tabs">
+                                <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">النشاط</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">الجدول الزمني</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">تعديل الملف الشخصي</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="activity">
+                                    <!-- Contact Information -->
+                                    <div class="post">
+                                        <div class="user-block">
+                                            <h4><i class="fas fa-info-circle"></i> معلومات الاتصال</h4>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong><i class="fas fa-envelope mr-1"></i> البريد الإلكتروني:</strong> @Model.User.Email</p>
+                                                <p><strong><i class="fas fa-phone mr-1"></i> الهاتف:</strong> @Model.User.Phone</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong><i class="fas fa-calendar mr-1"></i> عضو منذ:</strong> @Model.User.CreatedAt.ToString("MMMM dd, yyyy")</p>
+                                                <p><strong><i class="fas fa-file-alt mr-1"></i> وثائق العمل:</strong> 
+                                                    @if (!string.IsNullOrEmpty(Model.User.BusinessDocuments))
+                                                    {
+                                                        <a href="@Model.User.BusinessDocuments" target="_blank" class="btn btn-sm btn-info">
+                                                            <i class="fas fa-download"></i> عرض الوثائق
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">لم يتم رفعها</span>
+                                                    }
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Recent Properties -->
+                                    <div class="post">
+                                        <div class="user-block">
+                                            <h4><i class="fas fa-home"></i> العقارات الأخيرة</h4>
+                                        </div>
+                                        <div class="row">
+                                            @if (Model.Products != null && Model.Products.Count > 0)
+                                            {
+                                                foreach (var property in Model.Products)
+                                                {
+                                                    <div class="col-md-6">
+                                                        <div class="card">
+                                                            <img class="card-img-top" src="@property.MainImage" alt="صورة العقار">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">@property.Address</h5>
+                                                                <p class="card-text">
+                                                                    <span class="badge badge-@(property.isAccepted == PropertyStatus.Approved ? "success" : "warning")">
+                                                                        @property.isAccepted
+                                                                    </span>
+                                                                </p>
+                                                                <a href="/Product/PropertyDetails/@property.ProductId" class="btn btn-primary btn-sm">عرض التفاصيل</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-12">
+                                                    <p class="text-muted">لم يتم إدراج أي عقارات بعد.</p>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="timeline">
+                                    <!-- Timeline -->
+                                    <div class="timeline timeline-inverse">
+                                        <div class="time-label">
+                                            <span class="bg-success">تم إنشاء الحساب</span>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-user bg-primary"></i>
+                                            <div class="timeline-item">
+                                                <span class="time"><i class="far fa-clock"></i> @Model.User.CreatedAt.ToString("MMMM dd, yyyy")</span>
+                                                <h3 class="timeline-header">تم إنشاء الحساب</h3>
+                                                <div class="timeline-body">
+                                                    تم إنشاء حساب وكيل العقارات الخاص بك.
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if (Model.User.UpdatedAt.HasValue)
+                                        {
+                                            <div class="time-label">
+                                                <span class="bg-info">آخر تحديث</span>
+                                            </div>
+                                            <div>
+                                                <i class="fas fa-edit bg-info"></i>
+                                                <div class="timeline-item">
+                                                    <span class="time"><i class="far fa-clock"></i> @Model.User.UpdatedAt.Value.ToString("MMMM dd, yyyy")</span>
+                                                    <h3 class="timeline-header">تم تحديث الملف الشخصي</h3>
+                                                    <div class="timeline-body">
+                                                        تم تحديث معلومات ملفك الشخصي آخر مرة.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane" id="settings">
+                                    <form class="form-horizontal" action="/Seller/UpdateProfile" method="post" enctype="multipart/form-data">
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-group row">
+                                            <label for="inputName" class="col-sm-2 col-form-label">الاسم</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="inputName" name="Name" value="@Model.User.Name" placeholder="الاسم">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputEmail" class="col-sm-2 col-form-label">البريد الإلكتروني</label>
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="inputEmail" value="@Model.User.Email" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputPhone" class="col-sm-2 col-form-label">الهاتف</label>
+                                            <div class="col-sm-10">
+                                                <input type="tel" class="form-control" id="inputPhone" name="Phone" value="@Model.User.Phone" placeholder="الهاتف">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputProfileImage" class="col-sm-2 col-form-label">صورة الملف الشخصي</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" class="form-control" id="inputProfileImage" value="@Model.User.Image" name="Image" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputOfficePhoto" class="col-sm-2 col-form-label">صورة المكتب</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" class="form-control" id="inputOfficePhoto" value="@Model.User.OfficePhoto" name="OfficePhoto" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="offset-sm-2 col-sm-10">
+                                                <button type="submit" class="btn btn-danger">تحديث الملف الشخصي</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            // Initialize any necessary plugins or event handlers
+            $('.profile-tabs a').on('click', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+
+<head>
+    <meta charset="utf-8" />
+        <title>@ViewData["Title"] - WebProgramming</title>
+    <link rel="stylesheet" href="~/css/myStyle.css" asp-append-version="true" />
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+
+<body>
+
+    <header>
+        <nav>
+            <div>
+                <ul class="nav-header">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li>
+                        <a asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                    <li>
+                        <a asp-controller="First" asp-action="Admin">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        @* Waits for the section header content in the index.cshtml page then displays the rest *@
+        @await RenderSectionAsync("header",required:true)
+    </header>
+
+    <div>
+
+        <main role="main" class="pb-3">
+            @*First method to call partial pages*@
+            <partial name="_Menupartial" />
+
+            @*Second Method to call Partial Pages*@
+            @await Html.PartialAsync("_Menupartial")
+            @RenderBody()
+        </main>
+    </div>
+
+
+    <footer>
+        <div>Footer Area</div>
+        <address>Duzce - Turkey</address>
+        @await RenderSectionAsync("footer",required:true)
+    </footer>
+
+
+
+
+
+</body>
+</html>
