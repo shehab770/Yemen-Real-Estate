@@ -1,0 +1,210 @@
+@model webProgramming.Models.Seller
+@{
+    ViewData["Title"] = "SellerRegister";
+    Layout = "~/Views/Auth/Shared/Login_RegisterLayout.cshtml";
+}
+
+<div class="register-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="register-box">
+                    <div class="wrap-modal">
+                        <div class="images">
+                            <img src="~/assets/images/logo/logo%402x.png" alt="housa" class="main-logo">
+                        </div>
+                        <div class="content">
+                            <div class="title-login text-center mb-4">إنشاء حساب</div>
+
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            @if (TempData["Status"] != null)
+                            {
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    @TempData["Status"]
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+
+                            <!-- أزرار اختيار نوع البائع -->
+                            <div class="btn-group mb-3" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="citizenBtn" onclick="setSellerType(false)">بائع مواطن</button>
+                                <button type="button" class="btn btn-outline-success" id="estateBtn" onclick="setSellerType(true)">بائع عقارات</button>
+                            </div>
+
+                            <div class="comments">
+                                <div class="respond-comment">
+                                    <form asp-controller="Auth" asp-action="AddUSeller" method="post" enctype="multipart/form-data" class="comment-form form-submit">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" id="userType" name="Role" value="Seller">
+                                        <input type="hidden" id="isVerifiedField" name="IsVerified" value="false"> <!-- الافتراضي false للمواطن -->
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">اسم المستخدم</label>
+                                            <div class="input-group">
+                                                <input asp-for="Name" class="form-control" placeholder="أدخل اسم المستخدم">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">عنوان البريد الإلكتروني</label>
+                                            <div class="input-group">
+                                                <input asp-for="Email" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">رقم الهاتف</label>
+                                            <div class="input-group phone-input">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text bg-primary text-white">
+                                                        <i class="fas fa-phone me-1"></i>+90
+                                                    </span>
+                                                </div>
+                                                <input asp-for="Phone" class="form-control form-control-lg" placeholder="5XX XXX XX XX">
+                                            </div>
+                                            <span asp-validation-for="Phone" class="text-danger mt-1 d-block"></span>
+                                        </fieldset>
+
+                                        <!-- صورة المكتب أو الصورة الشخصية (يتغير حسب النوع) -->
+                                        <div id="officePhotoField">
+                                            <fieldset class="form-group">
+                                                <label id="officePhotoLabel" class="fw-6">صورة شخصية بجانب الوجه أو سيلفي بجانب الهوية</label>
+                                                <div class="input-group">
+                                                    <input type="file" id="officePhotoInput" name="OfficePhoto" class="form-control" accept="image/*">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+
+                                        <!-- وثائق العمل أو صورة الهوية (نفس الحقل، يتغير التسمية فقط، نفس النوع) -->
+                                        <fieldset class="form-group">
+                                            <label id="documentLabel" class="fw-6">صورة الهوية الشخصية</label>
+                                            <div class="input-group">
+                                                <input type="file" id="documentInput" name="BusinessDocuments" class="form-control" accept=".pdf,.doc,.docx" required>
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="BusinessDocuments" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">كلمة المرور</label>
+                                            <div class="input-group">
+                                                <input type="password" asp-for="Password" class="form-control" placeholder="أدخل كلمة المرور">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">تأكيد كلمة المرور</label>
+                                            <div class="input-group">
+                                                <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="أكد كلمة المرور">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">صورة الملف الشخصي (اختياري)</label>
+                                            <div class="input-group">
+                                                <input asp-for="Image" type="file" class="form-control" accept="image/*">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="goBack()" id="backButton">
+                                                <i class="fas fa-arrow-left me-2"></i>رجوع
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-user-plus me-2"></i>تسجيل
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function setSellerType(isEstate) {
+            const isVerifiedField = document.getElementById("isVerifiedField");
+            const documentLabel = document.getElementById("documentLabel");
+            const officePhotoLabel = document.getElementById("officePhotoLabel");
+            const officePhotoField = document.getElementById("officePhotoField");
+            const citizenBtn = document.getElementById("citizenBtn");
+            const estateBtn = document.getElementById("estateBtn");
+
+            if (isEstate) {
+                isVerifiedField.value = "true"; // عقاري
+                documentLabel.textContent = "وثائق العمل";
+                officePhotoLabel.textContent = "صورة المكتب";
+                citizenBtn.classList.remove("active");
+                estateBtn.classList.add("active");
+            } else {
+                isVerifiedField.value = "false"; // مواطن
+                documentLabel.textContent = "صورة الهوية الشخصية";
+                officePhotoLabel.textContent = "صورة شخصية بجانب الوجه أو سيلفي بجانب الهوية";
+                estateBtn.classList.remove("active");
+                citizenBtn.classList.add("active");
+            }
+        }
+
+        // تعيين الافتراضي كمواطن (false) عند التحميل
+        document.addEventListener("DOMContentLoaded", function() {
+            setSellerType(false);
+        });
+    </script>
+}
+
+<style>
+    .register-page-wrapper { min-height: 100vh; display: flex; align-items: center; background-color: #f8f9fa; padding: 40px 0; }
+    .register-box { background: white; border-radius: 15px; box-shadow: 0 0 30px rgba(0, 0, 0, 0.1); overflow: hidden; }
+    .wrap-modal { display: flex; background: white; }
+    .images { position: relative; width: 40%; background: #2d3954; padding: 40px; display: flex; align-items: center; justify-content: center; }
+    .images img { max-width: 100%; height: auto; }
+    .content { width: 60%; padding: 40px; }
+    .title-login { font-size: 28px; font-weight: 700; color: #2d3954; margin-bottom: 10px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { font-weight: 600; color: #2d3954; margin-bottom: 8px; }
+    .input-group { border: 1px solid #e5e5e5; border-radius: 5px; overflow: hidden; }
+    .input-group-text { background: transparent; border: none; color: #6c757d; }
+    .form-control { border: none; padding: 12px 15px; }
+    .form-control:focus { box-shadow: none; }
+    .btn-primary { background: #2d3954; border: none; padding: 12px 30px; font-weight: 600; transition: all 0.3s ease; }
+    .btn-primary:hover { background: #1a2533; transform: translateY(-2px); }
+    .text-danger { color: #dc3545; font-size: 12px; margin-top: 5px; display: block; }
+    .form-text { font-size: 0.8rem; margin-top: 0.25rem; }
+    .btn-group .btn.active { background-color: #007bff; color: white; }
+    @@media (max-width: 991px) {
+        .wrap-modal { flex-direction: column; }
+        .images, .content { width: 100%; }
+        .images { padding: 20px; }
+    }
+</style>

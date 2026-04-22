@@ -1,0 +1,518 @@
+@model webProgramming.Models.ViewModels
+@{
+    ViewData["Title"] = "الرسائل";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/@(Model.User?.Role == UserRole.Buyer ? "Customer" : "Seller")/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="_AgnetDahboardPartial" />
+    <!-- /.sidebar -->
+</aside>
+
+<!-- Main content -->
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">الرسائل</h1>
+                </div>
+                <!-- Breadcrumbs -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Dashboard">لوحة التحكم</a></li>
+                        <li class="breadcrumb-item active">الرسائل</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if(TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Chat List Card -->
+                <div class="col-md-4 col-lg-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="البحث في المحادثات...">
+                                <div class="input-group-append">
+                                    <button class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="height: 490px;" class="card-body p-0">
+                            <div class="list-group list-group-flush chat-list">
+                                <!-- Active Chat -->
+                               @if(Model.Products != null)
+                               {
+                                 @foreach(var item in Model.Products)
+                                 {
+                                    var chatId = Model.Chats?.FirstOrDefault(c => c.ProductId == item.ProductId)?.ChatId;
+                                    <a style="height: 100px;" href="#" onclick="getMessages('@chatId')" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <img src="@item.MainImage" class="rounded-circle mr-2" alt="Agent" style="width: 40px; height: 40px;">
+                                                <div>
+                                                    <h6 style="width: 197px;" class="mb-0">@item.Title</h6>
+                                                </div>
+                                            </div>
+                                            @{
+                                                var messageCount = Model.Messages?.Where(m => m.ChatId == chatId && m.SenderId != Model.User?.UserId && m.IsRead == 0).Count();
+                                                var lastMessage = Model.Messages?.Where(m => m.ChatId == chatId).OrderByDescending(m => m.CreatedAt).FirstOrDefault();
+                                            }
+                                            <span class="lastMessageContent message-content" data-chat-id="@chatId" style="top: 36px; right: 258px;">:@lastMessage?.Content</span>
+
+                                            <span style="position: relative;top: 35px; right: 228px; color: white;" class="message-time">@lastMessage?.CreatedAt.ToString("MM/dd/yyyy")</span>
+                                            @if (messageCount > 0)
+                                            {
+                                                <span class="badge badge-light rounded-pill unread-badge"
+                                                      style="background-color: red; color: white;
+                                                            position: absolute; bottom: 70px; right: 177px;" 
+                                                      data-chat-id="@chatId">@messageCount
+                                                </span>
+                                            }
+                                        </div>
+                                    </a>
+                                 }
+                               }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area Card -->
+                <div id="chatArea" class="col-md-8 col-lg-9" style="display: none;">
+                    <button onclick="closeChat()" class="btn btn-danger">إغلاق</button>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center" id="chatHeader">
+                                <img src="https://via.placeholder.com/40" class="rounded-circle mr-2" alt="Chat Partner" style="width: 40px; height: 40px;">
+                                <div>
+                                    <h5 class="mb-0">اختر محادثة لبدء المراسلة</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body chat-messages" style="height: 400px; overflow-y: auto;">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                        <div class="card-footer">
+                            <form class="message-form" onsubmit="sendMessage(event)">
+                                <input type="hidden" id="currentChatId" value=""/>
+                                <input type="hidden" id="receiverId" value=""/>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="messageInput" placeholder="اكتب رسالتك...">
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .chat-list .list-group-item {
+        border: none;
+        border-bottom: 1px solid #eee;
+        padding: 1rem;
+    }
+
+    .chat-list .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .chat-list .list-group-item.active {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .chat-messages {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        height: 400px;
+        overflow-y: auto;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 1rem;
+        max-width: 70%;
+    }
+
+    .message.received {
+        align-self: flex-start;
+        margin-right: auto;
+    }
+
+    .message.sent {
+        align-self: flex-end;
+        margin-left: auto;
+        flex-direction: row-reverse;
+    }
+
+    .message-content {
+        padding: 0.75rem 1rem;
+        border-radius: 1rem;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message.received .message-content {
+        background-color: #e9ecef;
+        border-top-left-radius: 0;
+    }
+
+    .message.sent .message-content {
+        background-color: #007bff;
+        color: white;
+        border-top-right-radius: 0;
+    }
+
+    .message.sent .message-content small {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .message.sent .message-time {
+        text-align: right;
+    }
+
+    .message.received .message-time {
+        text-align: left;
+    }
+
+    .chat-header .message-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .message-form {
+        padding: 0.5rem;
+    }
+
+    @@media (max-width: 768px) {
+        .message {
+            max-width: 85%;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        
+        let connection;
+        let currentChatId;
+        let openedChats = {};
+        let chatIsVisible = false;
+        let currentChatWindow = null;
+        let tabId = Math.random().toString(36).substring(2); // Unique ID for this tab
+
+        // Function to check if chat is open in other tabs
+        function isChatOpenInOtherTabs(chatId) {
+            const openChats = JSON.parse(localStorage.getItem('openChats') || '{}');
+            return Object.entries(openChats).some(([tab, chat]) => 
+                tab !== tabId && chat === chatId
+            );
+        }
+
+        // Function to update chat window state
+        function updateChatWindowState(chatId, isOpen) {
+            const openChats = JSON.parse(localStorage.getItem('openChats') || '{}');
+            if (isOpen) {
+                openChats[tabId] = chatId;
+            } else {
+                delete openChats[tabId];
+            }
+            localStorage.setItem('openChats', JSON.stringify(openChats));
+        }
+
+        // Listen for changes in other tabs
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'openChats') {
+                const openChats = JSON.parse(e.newValue || '{}');
+                // If our chat is open in another tab, update our state
+                if (currentChatId && openChats[tabId] !== currentChatId) {
+                    chatIsVisible = false;
+                    currentChatWindow = null;
+                }
+            }
+        });
+
+        // Clean up when tab is closed
+        window.addEventListener('beforeunload', function() {
+            updateChatWindowState(null, false);
+        });
+
+        let userChatIds = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Chats?.Select(c => c.ChatId) ?? new List<string>()));
+        // Initialize SignalR connection
+        function initializeSignalR() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chathub?userId=@Model.User?.UserId")
+                .withAutomaticReconnect()
+                .build();
+
+            // Handle incoming messages
+            connection.on("ReceiveMessage", (chatId, senderId, message, timestamp) => {
+                if (chatId === currentChatId) {
+                    const isCurrentUser = senderId === '@Model.User?.UserId';
+                    const messageHtml = `
+                        <div class='message ${isCurrentUser ? "sent" : "received"}'>
+                            <div class='message-content'>
+                                <div>${message}</div>
+                                <small class='text-muted'>${timestamp}</small>
+                            </div>
+                        </div>
+                    `;
+                    $('.chat-messages').append(messageHtml);
+                    scrollToBottom();
+
+                  if (chatId && message) {
+                        $(`.lastMessageContent[data-chat-id='${chatId}']`).text(`: ${message}`);
+                    }
+
+
+
+                    if(!chatIsVisible)
+                    {
+                        connection.invoke("UpdateUnreadCount", chatId)
+                    .catch(err => console.error("Error joining chat: ", err));
+                    }
+
+                    if(chatIsVisible)
+                    {
+                        markMessagesAsRead(chatId);
+                    }
+                }
+                // Update last message in chat list
+                updateChatListMessage(chatId, message, timestamp);
+            });
+
+            // Handle unread count updates
+            connection.on("UpdateUnreadCount", (chatId, count) => {
+                // Update all chat items
+                $('.chat-list .list-group-item').each(function() {
+                    const currentChatId = $(this).attr('data-chat-id');
+                    const chatItem = $(this);
+                    let badge = chatItem.find('.unread-badge');
+                    
+                    // If this is the chat that was updated, use the new count
+                    // Otherwise, keep the existing badge count
+                    if (currentChatId === chatId) {
+                        if (count > 0) {
+                            if (badge.length) {
+                                badge.text(count);
+                            } else {
+                                chatItem.append(`
+                                    <span class="badge badge-danger unread-badge" 
+                                          style="position: absolute; top: 10px; right: 175px;">
+                                        ${count}
+                                    </span>
+                                `);
+                            }
+                        } else {
+                            badge.remove();
+                        }
+                    } else {
+                        // For other chats, trigger an update of their unread count
+                        connection.invoke("UpdateUnreadCount", currentChatId)
+                            .catch(err => console.error("Error updating unread count: ", err));
+                    }
+                });
+            });
+
+            // Start the connection
+            connection.start()
+                .then(() => {
+                    console.log("SignalR Connected");
+                    // Join all chats for the user - now just pass chatId, no userId
+                    userChatIds.forEach(chatId => {
+                        connection.invoke("JoinChat", chatId)
+                            .catch(err => console.error(`Failed to join chat ${chatId}:`, err));
+                    });
+                    if (currentChatId) {
+                        joinChat(currentChatId);
+                    }
+                })
+                .catch(err => console.error("SignalR Connection Error: ", err));
+        }
+        
+        function joinChat(chatId) {
+            if (connection && connection.state === signalR.HubConnectionState.Connected) {
+                connection.invoke("JoinChat", chatId)
+                    .catch(err => console.error("Error joining chat: ", err));
+            }
+        }
+
+        function updateChatListMessage(chatId, message, timestamp) {
+            const chatItem = $(`.chat-list .list-group-item[data-chat-id="${chatId}"]`);
+            if (chatItem.length) {
+                chatItem.find('.message-content').text(message);
+                chatItem.find('.message-time').text(timestamp);
+            }
+        }
+
+        function markMessagesAsRead(chatId) {
+            if (connection && connection.state === signalR.HubConnectionState.Connected) {
+                // MarkMessagesAsRead now only takes chatId
+                connection.invoke("MarkMessagesAsRead", chatId)
+                    .catch(err => console.error("Error marking messages as read: ", err));
+            }
+        }
+
+        function getMessages(chatId) {
+            if(!chatId) return;
+            
+            // Check if chat is open in other tabs
+            if (isChatOpenInOtherTabs(chatId)) {
+                console.log('Chat is already open in another tab');
+                return;
+            }
+            
+            currentChatId = chatId;
+            chatIsVisible = true;
+            currentChatWindow = chatId;
+            updateChatWindowState(chatId, true);
+            
+            $('#chatArea').show();
+            $('#currentChatId').val(chatId);
+            
+            joinChat(chatId);
+
+            if (chatIsVisible) {
+                markMessagesAsRead(chatId);
+                openedChats[chatId] = true;
+            }
+            
+            loadMessages(chatId);
+        }
+
+        function closeChat() {
+            $('#chatArea').hide();
+            $('#currentChatId').val('');
+            chatIsVisible = false;
+            currentChatWindow = null;
+            updateChatWindowState(null, false);
+        }
+
+        function loadMessages(chatId) {
+            $.ajax({
+                url: '/Chat/GetMessage',
+                type: 'POST', 
+                data: { chatId: chatId },
+                success: function(response) {
+                    if(response.success) {
+                        $('.chat-messages').html(response.messages);
+                        
+                        if(response.chatPartner) {
+                            $('#chatHeader').html(`
+                                <div class="d-flex align-items-center">
+                                    <img src="${response.chatPartner.image || 'https://via.placeholder.com/40'}" 
+                                         class="rounded-circle mr-2" 
+                                         alt="${response.chatPartner.name}" 
+                                         style="width: 40px; height: 40px;">
+                                    <div>
+                                        <h5 class="mb-0">${response.chatPartner.name}</h5>
+                                        <span class="message-time">${response.chatPartner.role === 2 ? 'Seller' : 'Buyer'}</span>
+                                    </div>
+                                </div>
+                            `);
+                            // Set the receiverId in the form
+                            $('#receiverId').val(response.chatPartner.userId);
+                        }
+                        
+                        scrollToBottom();
+                        
+                        $('.chat-list .list-group-item').removeClass('active');
+                        $(`.chat-list .list-group-item[data-chat-id="${chatId}"]`).addClass('active');
+                    }
+                }
+            });
+        }
+
+        function sendMessage(event) {
+            event.preventDefault();
+            const messageContent = $('#messageInput').val().trim();
+            const chatId = $('#currentChatId').val();
+            const receiverId = $('#receiverId').val();
+
+            if(!messageContent || !chatId || !receiverId) return;
+
+            $.ajax({
+                url: '/Chat/SendMessage',
+                type: 'POST',
+                data: { 
+                    chatId: chatId, 
+                    content: messageContent,
+                    receiverId: receiverId 
+                },
+                success: function(response) {
+                    if(response.success) {
+                        $('#messageInput').val('');
+                    } else {
+                        console.error('Error sending message:', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error sending message:', error);
+                }
+            });
+        }
+
+        function scrollToBottom() {
+            var chatWindow = $('.chat-messages');
+            chatWindow.scrollTop(chatWindow[0].scrollHeight);
+        }
+
+        // Initialize SignalR when document is ready
+        $(document).ready(function() {
+            initializeSignalR();
+            
+            // Add data-chat-id to chat list items
+            $('.chat-list .list-group-item').each(function() {
+                const chatId = $(this).attr('onclick').match(/'([^']+)'/)[1];
+                $(this).attr('data-chat-id', chatId);
+            });
+
+            // Handle initial chat load
+            if('@ViewBag.ChatId') {
+                getMessages('@ViewBag.ChatId');
+            }
+        });
+    </script>
+}

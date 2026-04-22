@@ -1,0 +1,494 @@
+﻿@model webProgramming.Models.ViewModels;
+@using Newtonsoft.Json;
+@using System.ComponentModel.DataAnnotations;
+@using System.Reflection
+@{
+    ViewData["Title"] = " دِيَار";
+}
+
+<style>
+.img-author img {
+    width: 50px;              /* حجم ثابت */
+    height: 50px;
+    object-fit: cover;        /* يقص الصورة بشكل مناسب */
+    border-radius: 50%;       /* يخليها دائرية */
+    border: 2px solid #ddd;   /* إطار خفيف */
+    display: block;
+}
+
+
+/* إخفاء زر الراديو */
+.item-title input[type="radio"] {
+    display: none;
+}
+
+.property-option {
+    background-color: #FFF5E0;
+    padding: 15px 30px;
+    cursor: pointer;
+    display: inline-block;
+    padding-right: 55px;
+    border-top-left-radius: 24px;
+    transition: all 0.6s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    color: #000;
+    position: relative;
+}
+
+</style>
+<!-- شريط التمرير -->
+<section class="slider home2 home3" dir="rtl">
+    <div class="slider-item">
+        <div class="img-slider">
+            <img class="img-item" src="~/assets/images/slider/bg-slider-3.jpg" alt="">
+            <svg xmlns="http://www.w3.org/2000/svg" widht="auto" height="100" viewBox="0 150 3000 100">
+                <path class="st1" d="M 0 190 C 1200 400 1200 50 3000 190 L 3000 350 L 0 350 L 0 190" fill="#fff">
+                    <animate attributeName="d" dur="8s" values="
+                                        M 0 190 C 1200 400 1200 50 3000 190 L 3000 350 L 0 350 L 0 190;
+                                        M 0 190 C 700 80 600 300 3000 190 L 3000 350 L 0 350 L 0 190;
+                                        M 0 190 C 1200 400 1200 50 3000 190 L 3000 350 L 0 350 L 0 190"
+                        repeatCount="indefinite">
+                    </animate>
+                </path>
+            </svg>
+        </div>
+        <div class="container relative">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="content po-content-two">
+                        <div class="heading center">
+                            <h1 class="text-color-1 fs-80 font-2 fw-8 wow fadeInDown js-letters" data-wow-delay="50ms"
+                                data-wow-duration="1000ms">دِيَار</h1>
+<p class="font-2 text-color-1 text-t" style="font-size:22px;">
+    من دِيَارنا إلى دِيَارك... بيتك أقرب مما تتصور
+</p>
+                        </div>
+
+                        <div class="flat-tabs themesflat-tabs">
+                            <form method="post" action="/Home/Search">
+                                <input type="hidden" name="bathType" value="0">
+                                <input type="hidden" name="bedType" value="0">
+                                <div class="box-tab center">
+                                   <ul class="menu-tab tab-title flex justify-center">
+        @foreach(PropertyType type in Enum.GetValues(typeof(PropertyType)))
+        {
+            if((int)type <= 2)
+            {
+                var displayName = type.GetType()
+                                      .GetMember(type.ToString())
+                                      .First()
+                                      .GetCustomAttributes(typeof(DisplayAttribute), false)
+                                      .Cast<DisplayAttribute>()
+                                      .FirstOrDefault()?.Name 
+                                      ?? type.ToString();
+
+                <label class="item-title property-option">
+                    <input type="radio" name="propertyType" value="@((int)type)" @(Model.Product?.Type == type ? "checked" : "") />
+                    <h4 class="inner">@displayName</h4>
+                </label>
+            }
+        }
+    </ul>
+                                </div>
+
+                                <div class="content-tab">
+                                    <div class="content-inner tab-content flex-center">
+                                        <div class="form-sl">
+                                            <div class="wd-find-select flex">
+                                                <div class="inner-group">
+                                                    <div class="form-group-2 form-style">
+                                                        <div class="group-select">
+                                                        
+
+<select name="houseType" class="nice-select">
+        <option value="">نوع العقار</option>
+        <option value="0">الكل</option>
+        @foreach (ArticleHouseType hType in Enum.GetValues(typeof(ArticleHouseType)))
+        {
+            var displayName = hType.GetType()
+                                   .GetMember(hType.ToString())
+                                   .First()
+                                   .GetCustomAttribute<DisplayAttribute>()?.Name 
+                                   ?? hType.ToString();
+
+            <option value="@((int)hType)">@displayName</option>
+        }
+    </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-2 form-style">
+                                                        <div class="group-select">
+                                                            <select name="CityId" id="citySelect" class="nice-select">
+                                                                <option value="">المدينة</option>
+                                                                 <option value="0">الكل</option>
+                                                                @if(Model.Cities != null)
+                                                                {
+                                                                    @foreach(var city in Model.Cities)
+                                                                    {
+                                                                        <option value="@city.Id">@city.Name</option>
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group-3 form-style">
+                                                        <div class="group-select">
+                                                            <select name="NeighbId" id="neighbSelect" class="nice-select">
+                                                                <option value="">الحي</option>
+                                                                <option value="0">الكل</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group-4 form-style">
+                                                    <a class="icon-filter pull-right">
+                                                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path
+                                                                d="M3 10.5V0.75M3 10.5C3.39782 10.5 3.77936 10.658 4.06066 10.9393C4.34196 11.2206 4.5 11.6022 4.5 12C4.5 12.3978 4.34196 12.7794 4.06066 13.0607C3.77936 13.342 3.39782 13.5 3 13.5M3 10.5C2.60218 10.5 2.22064 10.658 1.93934 10.9393C1.65804 11.2206 1.5 11.6022 1.5 12C1.5 12.3978 1.65804 12.7794 1.93934 13.0607C2.22064 13.342 2.60218 13.5 3 13.5M3 17.25V13.5M15 10.5V0.75M15 10.5C15.3978 10.5 15.7794 10.658 16.0607 10.9393C16.342 11.2206 16.5 11.6022 16.5 12C16.5 12.3978 16.342 12.7794 16.0607 13.0607C15.7794 13.342 15.3978 13.5 15 13.5M15 10.5C14.6022 10.5 14.2206 10.658 13.9393 10.9393C13.658 11.2206 13.5 11.6022 13.5 12C13.5 12.3978 13.658 12.7794 13.9393 13.0607C14.2206 13.342 14.6022 13.5 15 13.5M15 17.25V13.5M9 4.5V0.75M9 4.5C9.39782 4.5 9.77936 4.65804 10.0607 4.93934C10.342 5.22064 10.5 5.60218 10.5 6C10.5 6.39782 10.342 6.77936 10.0607 7.06066C9.77936 7.34196 9.39782 7.5 9 7.5M9 4.5C8.60218 4.5 8.22064 4.65804 7.93934 4.93934C7.65804 5.22064 7.5 5.60218 7.5 6C7.5 6.39782 7.65804 6.77936 7.93934 7.06066C8.22064 7.34196 8.60218 7.5 9 7.5M9 17.25V7.5"
+                                                                stroke="#FFA920" stroke-width="1.5"
+                                                                stroke-linecap="round" stroke-linejoin="round" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
+
+                                                <div class="button-search sc-btn-top">
+                                                    <button type="submit" class="sc-button">
+                                                        <span>ابحث الآن</span>
+                                                        <i class="far fa-search text-color-1"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="wd-find-select wd-search-form">
+                                                <div class="box1 flex flex-wrap form-wg">
+                                                    <div class="form-group wg-box3">
+                                                        <div class="group-select">
+                                                            <select name="bathrooms" class="nice-select">
+                                                                <option value="">الحمامات: أي</option>
+                                                                <option value="0">الكل</option>
+                                                                @for(int i = 1; i <= 10; i++)
+                                                                {
+                                                                    <option value="@i">@i</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group wg-box3">
+                                                        <div class="group-select">
+                                                            <select name="bedrooms" class="nice-select">
+                                                                <option value="">الغرف: أي</option>
+                                                                <option value="0">الكل</option>
+                                                                @for(int i = 1; i <= 10; i++)
+                                                                {
+                                                                    <option value="@i">@i</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                     <div class="form-group wg-box3">
+                                                        <div class="widget widget-price">
+                                                            <div class="caption flex-two">
+                                                                <div>
+                                                                    <span class="fw-6">نطاق السعر</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="price-inputs d-flex">
+                                                                <input type="number" name="minPrice" placeholder="الحد الأدنى" class="form-control form-control-sm mr-2" style="width: 100px;">
+                                                                <span class="mx-2">-</span>
+                                                                <input type="number" name="maxPrice" placeholder="الحد الأقصى" class="form-control form-control-sm" style="width: 100px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group wg-box3">
+                                                        <div class="widget widget-price">
+                                                            <div class="caption flex-two">
+                                                                <div>
+                                                                    <span class="fw-6">نطاق المساحة (قدم مربع)</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="size-inputs d-flex">
+                                                                <input type="number" name="minSize" placeholder="الحد الأدنى" class="form-control form-control-sm mr-2" style="width: 100px;">
+                                                                <span class="mx-2">-</span>
+                                                                <input type="number" name="maxSize" placeholder="الحد الأقصى" class="form-control form-control-sm" style="width: 100px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="boder-wg"></div>
+                                                <div class="box2 flex flex-wrap form-wg">
+                                                    @for(int n=0; n<Math.Ceiling(Model.Amenities.Count/3.0); n++)
+                                                    {
+                                                        <div class="form-group wg-box3">
+                                                            <div class="tf-amenities bg-white">
+                                                                @for(int i=0; i<3; i++)
+                                                                {
+                                                                    int index = n*3+i;
+                                                                    if(index >= Model.Amenities.Count){break;}
+                                                                    var amenity = Model.Amenities[index];
+                                                                    <label class="flex align-items-center" style="margin-bottom:7px; gap:5px;">
+                                                                        <input name="amenities" type="checkbox" value="@amenity.FeatureName" style="margin-inline-end:7px;" />
+                                                                        <span class="btn-checkbox"></span>
+                                                                        <i class="@amenity.IconClass" style="font-size: 14px; width: 18px;"></i>
+                                                                        <span class="fs-13">@amenity.DisplayName</span>
+                                                                    </label>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="flat-featured wg-dream home3" dir="rtl">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+
+                <form dir="rtl" id="trackForm" method="post" action="/Home/Track" class="d-flex justify-content-center align-items-center mb-5">
+                    <div class="form-group" style="width: 50%; min-width: 300px;">
+                        <div class="input-group" dir="ltr">
+                            <input type="text" name="productId" class="form-control form-control-lg" placeholder="أدخل معرف العقار للتتبع" required style="border-radius: 25px 0 0 25px; padding: 12px 20px;">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary btn-lg" style="border-radius: 0 25px 25px 0; padding: 12px 30px;">
+                                    <i class="fas fa-search mr-2"></i>تتبع العقار
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                }
+                <br />
+                <br />
+                <div class="heading-section center">
+                    <h2>العقارات المميزة</h2>
+                    <p class="text-color-4">أفضل العقارات المعروضة حاليا</p>
+                </div>
+                <div class="flat-tabs themesflat-tabs">
+
+                    <div class="content-tab">
+                        <div class="content-inner tab-content">
+                            <div class="wrap-item flex">
+                                <!-- العمود 1 -->
+                            @if(Model.Products != null)
+                            {
+                                @foreach(var product in Model.Products)
+                                {
+
+                                        var properties = JsonConvert.DeserializeObject<dynamic>(product.Properties);
+                                        var listingImages = JsonConvert.DeserializeObject<dynamic>(product.ListingImages);
+
+
+                                 <div class="box box-dream hv-one">
+                                        <div class="image-group relative ">
+                                            <span class="featured fs-12 fw-6">مميز</span>
+                                            <span class="featured style fs-12 fw-6">لـ @product.Type</span>
+                                            <div class="swiper-container noo carousel-2 img-style">
+                                                @* صورة العقار الرئيسية *@
+                                                <a href="/Home/PropDetail/@product.ProductId" class="icon-plus"><img
+                                                        src="~/assets/images/icon/plus.svg" alt="صور">
+                                                </a>
+
+                                                <div class="swiper-wrapper ">
+                                                    @* عرض الصورة الرئيسية أولاً *@
+                                                    @if(!string.IsNullOrEmpty(product.MainImage))
+                                                    {
+                                                        <div class="swiper-slide"><img src="@product.MainImage" alt="صورة رئيسية"></div>
+                                                    }
+                                                    @* ثم عرض الصور الأخرى من listingImages *@
+                                                    @if(listingImages != null)
+                                                    {
+                                                        @foreach(var image in listingImages)
+                                                        {
+                                                             <div class="swiper-slide"><img src="@image" alt="صور"></div>
+                                                        }
+                                                    }
+
+                                                </div>
+
+                                                <div class="pagi2">
+                                                    <div class="swiper-pagination2"> </div>
+                                                </div>
+                                                <div class="swiper-button-next2 "><i class="fal fa-arrow-right"></i></div>
+                                                <div class="swiper-button-prev2 "><i class="fal fa-arrow-left"></i> </div>
+                                            </div>
+                                        </div>
+                                        <div class="content">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h3 class="link-style-1"><a href="/Home/PropDetail/@product.ProductId">@(product.Title ?? "لا يوجد عنوان")</a></h3>
+                                                <button class="btn favorite-btn" onclick="toggleFavorite('@product.ProductId')" id="favorite-@product.ProductId" style="background-color: transparent; border: none;">
+                                                    <i class="@(Model.Favors?.FirstOrDefault(f => f.ProductId == product.ProductId && f.UserId == Model.User?.UserId) != null ? "fas" : "far") fa-heart" style="cursor: pointer; font-size: 22px; transition: all 0.3s ease; color: #4CAF50; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));"></i>
+                                                </button>
+                                            </div>
+                                            <div class="text-address">
+                                                <p class="p-12">@product.Address</p>
+                                            </div>
+                                            <div class="money fs-18 fw-6 text-color-3"><a
+                                                    href="/Home/PropDetail/@product.ProductId">$@product.Price</a></div>
+                                            <div class="icon-box flex">
+                                                <div class="icons icon-1 flex"><span>الغرف: </span>@properties?.bedrooms_num<span
+                                                        class="fw-6"></span></div>
+                                                <div class="icons icon-2 flex"><span>الحمامات:  </span>@properties?.bathrooms_num<span
+                                                        class="fw-6"></span></div>
+                                                <div class="icons icon-3 flex"><span>المساحة: </span><span
+                                                        class="fw-6">@properties?.prop_size</span></div>
+                                            </div>
+                                           <div class="days-box flex justify-space align-center">
+    <a class="compare flex align-center fw-6" href="#">
+        @{
+            var seller = Model.Sellers?.FirstOrDefault(s => s.UserId == product.SellerId);
+        }
+        @(seller?.Name ?? "NestHood")
+        @if(seller?.IsVerified == true)
+        {
+            <span class="verified-badge" title="موثق">
+                <i class="fas fa-check-circle"></i>
+            </span>
+        }
+    </a>
+
+    <div class="img-author hv-tool" data-tooltip="@(seller?.Name ?? "Kathryn Murphy")">
+        <img src="@(seller?.Image ?? "assets/images/author/author-31.jpg")" alt="صور">
+    </div>
+
+    <div class="days">@product.YearBuilt</div>
+</div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="flat-your">
+    <div class="container-full">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="heading-section center">
+                    <h2>اعثر على حيك</h2>
+                    <p class="text-color-4">اعثر على منزل أحلامك أو شقتك مع قوائمنا</p>
+                </div>
+                <div class="swiper-container carousel-4  ">
+                    <div class="swiper-wrapper ">
+                            @if(Model.Cities != null)
+                            {
+                                int counter = 1;
+                                @foreach(var city in Model.Cities.OrderBy(c => c.Name).Take(10))
+                                {
+                                    
+                                    <div class="swiper-slide">
+                                        <div class="box hv-one2 ">
+                                            <div class="images img-style2">
+                                                <a href="" class="icon-plus">
+                                                    <img src="~/assets/images/icon/plus.svg" alt="صور">
+                                                </a>
+                                                    <img class="img br-10" src="~/assets/images/img-box/find-your-@(counter++).jpg" alt="صور">
+                                            </div>
+                                            <div class="content link-style-3">
+                                                <a href="" class="">
+                                                    <h3>@city.Name</h3>
+                                                </a>
+                                                <p class="text-color-1">@(Model.Products?.Count(p => p.CityId == city.Id)) قائمة</p>
+                                                <div class="meta style">
+                                                    <a href=""
+                                                        class="btn-button flex align-center fs-14 fw-6 text-color-1"><span>عرض جميع القوائم</span>
+                                                        <svg width="14" height="7" viewBox="0 0 14 7" fill="none"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M10.5 1L13 3.5M13 3.5L10.5 6M13 3.5H1" stroke="white"
+                                                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                        </svg>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+                            }
+                    </div>
+                    <div class="pagi center">
+                        <div class="swiper-pagination1"> </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="flat-blog tf-section" dir="rtl">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="heading-section center">
+                    <h2>من مقالاتنا</h2>
+                    <p class="text-color-4">ديار العقارية - مقالات عقارية</p>
+                </div>
+            </div>
+
+            @if(Model.Articles != null)
+            {
+                @foreach(var item in Model.Articles)
+                {
+                    <div class="col-lg-4 col-md-4">
+                        <div class="box hover-img">
+                            <div class="images img-style relative">
+                                <a href="/Home/ArticleDetail/@item.Id">
+                                    <img style="width: 350px; height: 251px; object-fit: cover;" src="@item.Image" alt="@item.Title">
+                                </a>
+                                <div class="sub-box flex align-center fs-13 fw-6">
+                                    <div class="title-1">@item.CreatedAt.ToString("MMM")</div>
+                                    <a class="title-2 text-color-3">@item.HouseType</a>
+                                </div>
+                            </div>
+
+                            <div class="content center">
+                                <h3 class="link-style-1">
+                                    <a href="/Home/ArticleDetail/@item.Id">@item.Title</a>
+                                </h3>
+                                <div class="meta">
+                                    <a href="/Home/ArticleDetail/@item.Id"
+                                       class="btn-button flex align-center justify-center fs-13 fw-6 text-color-3">
+                                        <span>اقرأ المزيد</span>
+                                        <svg width="13" height="12" viewBox="0 0 13 12" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0.875 6H12.125M12.125 6L7.0625 0.9375M12.125 6L7.0625 11.0625"
+                                                  stroke="#FFA920" stroke-width="1.5" stroke-linecap="round"
+                                                  stroke-linejoin="round" />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+<partial name="_ContactPartial" />
+
+<!-- Start Partners -->
+@section Scripts{
+    <partial name="_ScriptsPartial" />
+}

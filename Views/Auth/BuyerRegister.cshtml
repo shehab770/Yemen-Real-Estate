@@ -1,0 +1,281 @@
+@model webProgramming.Models.Buyer
+@{
+    ViewData["Title"] = "BuyerRegister";
+    Layout = "~/Views/Auth/Shared/Login_RegisterLayout.cshtml";
+}
+
+<div class="register-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="register-box">
+                    <div class="wrap-modal">
+                        <div class="images">
+                            <!-- Remove duplicate logo -->
+                            <img src="~/assets/images/logo/logo%402x.png" alt="housa" class="main-logo">
+                        </div>
+                        <div class="content">
+                            <div class="title-login text-center mb-4">أنشاء حساب</div>
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                         @if (TempData["Status"] != null)
+										{
+											<div class="alert alert-danger alert-dismissible fade show" role="alert">
+												@TempData["Status"]
+												<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+										}
+                            <div>
+                                <div class="comments">
+                                    <div class="respond-comment">
+                                        <form asp-controller="Auth" asp-action="AddUBuyer" method="post" enctype="multipart/form-data" class="comment-form form-submit">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" id="userType" name="Role" value="Buyer">
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">أسم المستخدم</label>
+                                                <div class="input-group">
+                                                    <input asp-for="Name" class="form-control" placeholder="أدخل أسمك">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-user"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="Name" class="text-danger"></span>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">البريد الإلكتروني</label>
+                                                <div class="input-group">
+                                                    <input asp-for="Email" class="form-control" placeholder="أدخل البريد الإلكتروني">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-envelope"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">رقم الهاتف</label>
+                                                <div class="input-group phone-input">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text bg-primary text-white">
+                                                            <i class="fas fa-phone me-1"></i>
+                                                            +967
+                                                        </span>
+                                                    </div>
+                                                   <input asp-for="Phone"  
+                                                     class="form-control form-control-lg"  
+                                                      placeholder="7XX XXX XXX"
+                                                      pattern="7[0-9]{2}[0-9]{3}[0-9]{3}"
+                                                      maxlength="9"
+                                                      title="يرجى إدخال رقم هاتف يمني صحيح يبدأ بالرقم 7"
+                                                      style="border-radius: 0 4px 4px 0; font-size: 1rem; padding: 0.75rem 1rem;">
+                                                </div>
+                                               <span asp-validation-for="Phone" class="text-danger mt-1 d-block"></span>
+<small class="form-text text-muted mt-1 d-block">
+    <i class="fas fa-info-circle me-1"></i>
+    الصيغة: 7XX XXX XXX (رقم جوال يمني)
+</small>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">كلمة المرور</label>
+                                                <div class="input-group">
+                                                    <input type="password" asp-for="Password" class="form-control" placeholder="ادخل كلمة المرور">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-lock"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="Password" class="text-danger"></span>
+                                               <div class="form-text text-muted small">
+    يجب أن تكون كلمة المرور مكونة من 6 أحرف على الأقل
+</div>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">تأكيد كلمة المرور</label>
+                                                <div class="input-group">
+                                                    <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="تأكيد كلمة المرور">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-lock"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                            </fieldset>
+
+                                            <fieldset class="form-group">
+                                                <label class="fw-6">صورة الملف الشخصي (اختياري)</label>
+                                                <div class="input-group">
+                                                    <input asp-for="Image" type="file" class="form-control" accept="image/*">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-image"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span asp-validation-for="Image" class="text-danger"></span>
+                                            </fieldset>
+
+                                            <div class="d-flex justify-content-between align-items-center" >
+                                                <button type="button" class="btn btn-outline-secondary" onclick="goBack()" id="backButton" style="color: #0c0c0c;">
+                                                    <i class="fas fa-arrow-left me-2 " style="color: #0c0c0c;" ></i>عودة
+                                                </button>
+                                                <script>
+                                                    document.getElementById('backButton').addEventListener('click', function() {
+                                                        window.history.back();
+                                                    });
+                                                </script>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-user-plus me-2"></i> أنشاء حساب
+
+                                                </button>
+                                            </div>
+
+                                            <br>
+
+                                            <div class="text-center mt-4" dir="rtl">
+                                                <p class="mb-2">هل لديك حساب بالفعل؟ <a href="/Auth/Login" class="text-primary">تسجيل دخول</a></p>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .register-page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background-color: #f8f9fa;
+        padding: 40px 0;
+    }
+
+    .register-box {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .wrap-modal {
+        display: flex;
+        background: white;
+    }
+
+    .images {
+        position: relative;
+        width: 40%;
+        background: #2d3954;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .images img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .content {
+        width: 60%;
+        padding: 40px;
+    }
+
+    .title-login {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3954;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #2d3954;
+        margin-bottom: 8px;
+    }
+
+    .input-group {
+        border: 1px solid #e5e5e5;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .input-group-text {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+    }
+
+    .form-control {
+        border: none;
+        padding: 12px 15px;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        background: #2d3954;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #1a2533;
+        transform: translateY(-2px);
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .form-text {
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    @@media (max-width: 991px) {
+        .wrap-modal {
+            flex-direction: column;
+        }
+
+        .images, .content {
+            width: 100%;
+        }
+
+        .images {
+            padding: 20px;
+        }
+    }
+</style>

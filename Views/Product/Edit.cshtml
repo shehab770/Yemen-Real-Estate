@@ -1,0 +1,604 @@
+@model webProgramming.Models.ViewModels
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "تعديل العقار";
+    Layout = "Admin_Layout";
+}
+
+@{
+    var country = (List<Country>)ViewBag.Countries;
+}
+
+<!-- Our Dashbord -->
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Seller/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="_AgnetDahboardPartial" />
+    <!-- /.sidebar -->
+</aside>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>تعديل العقار</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item"><a href="/Seller/ShowProperities">العقارات</a></li>
+                        <li class="breadcrumb-item active">تعديل العقار</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- general form elements disabled -->
+                    <div style="width:200%;" class="card card-warning">
+                        <div class="card-header">
+                            <h3 class="card-title">تعديل العقار</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        @{
+                            var properities = JsonConvert.DeserializeObject<dynamic>(Model.Product?.Properties ?? "{}") ?? new{};
+                            var lisitingImages = JsonConvert.DeserializeObject<dynamic>(Model.Product?.ListingImages ?? "[]") ?? new{};
+                        }
+                        <div class="card-body">
+                            <form role="form" method="post" asp-action="Update" asp-controller="Product" enctype="multipart/form-data">
+                                <input type="text" name="ProductId" value="@Model.Product?.ProductId" hidden />
+                                <input type="text" name="SellerId" value="@Model.User?.UserId" hidden />
+                                <div class="row">
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>عنوان العقار</label>
+                                            <input type="text" name="prop_tilte" class="form-control"
+                                                placeholder="ادخل العنوان" value="@Model.Product?.Title" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-12">
+                                        <!-- textarea -->
+                                        <div class="form-group">
+                                            <label>وصف العقار</label>
+                                            <textarea name="prop_desc" class="form-control" rows="3" placeholder="ادخل وصف العقار">@Model.Product?.Description</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>نوع العقار</label>
+                                            <select name="prop_type" class="form-control" id="propertyType">
+                                                <option value="@((int)Model.Product.Type)" selected>@(Model.Product?.Type == PropertyType.Sale ? "بيع" : "إيجار")</option>
+                                                 @foreach(PropertyType type in Enum.GetValues(typeof(PropertyType)))
+                                                {
+                                                    <option value="@((int)type)">@((type == PropertyType.Sale ? "بيع" : "إيجار"))</option>
+                                                }
+                                            </select>
+                                        </div>
+                                       <small class="form-text text-muted">عند اختيار بيع أو إيجار سيتم عرض العقار في الموقع</small>
+                                    </div>
+                                     <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>حالة العرض</label>
+                                            <select name="prop_status" class="form-control" id="propertyStatus">
+                                                <option value="">العرض ساري</option>
+                                                <option value="3">العرض غير ساري</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>نوع السكن</label>
+                                            <select name="estate_type" class="form-control">
+                                                <option value="@((int)Model.Product.EstateType)" selected>
+                                                                                                        @(Model.Product.EstateType == HouseType.House ? "منزل" : 
+                                                                                                            Model.Product.EstateType == HouseType.Apartment ? "شقة" : "فيلا")
+                                                </option>
+                                                 @foreach(HouseType type in Enum.GetValues(typeof(HouseType)))
+                                                {
+                                                    <option value="@((int)type)">@((type == HouseType.House ? "منزل" : type == HouseType.Apartment ? "شقة" : "فيلا"))</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مدة الإيجار</label>
+                                            <select name="rent_type" class="form-control" id="rentalPeriod">
+                                                <option value="@((int)Model.Product.CategoryType)" selected>
+                                                                                                        @(Model.Product.CategoryType == PropertyCategoryType.Selling ? "بيع" :
+                                                                                                            Model.Product.CategoryType == PropertyCategoryType.Daily ? "يومي" :
+                                                                                                            Model.Product.CategoryType == PropertyCategoryType.Monthly ? "شهري" : "سنوي")
+                                                </option>
+                                                @foreach(PropertyCategoryType type in Enum.GetValues(typeof(PropertyCategoryType)))
+                                                {
+                                                    <option value="@((int)type)">@((type == PropertyCategoryType.Selling ? "بيع" : type == PropertyCategoryType.Daily ? "يومي" : type == PropertyCategoryType.Monthly ? "شهري" : "سنوي"))</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>سنة البناء</label>
+                                            <input name="YearBuilt" value="@Model.Product?.YearBuilt" type="date" class="form-control" placeholder="ادخل السنة">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>المساحة</label>
+                                            <input name="prop_size" value="@properities.prop_size" type="text" class="form-control" placeholder="ادخل المساحة">
+                                        </div>
+                                    </div>
+
+                                   <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>سعر العقار</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                      <input name="prop_price" value="@Model.Product?.Price" type="number" class="form-control"
+                                                          placeholder="ادخل السعر" min="0" step="0.01" required>
+                                            </div>
+                                            <small class="form-text text-muted">ادخل السعر بالدولار (مثال: 1000.00)</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>عدد الغرف</label>
+                                            <input name="rooms_num" value="@properities.rooms_num" type="number" min="0" class="form-control" placeholder="ادخل عدد الغرف">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مساحة الغرفة</label>
+                                            <input name="rooms_size" value="@properities.rooms_size" type="text" class="form-control" placeholder="ادخل مساحة الغرفة">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>عدد غرف النوم</label>
+                                            <input name="bedrooms_num" type="number" value="@properities.bedrooms_num" min="0" class="form-control" placeholder="ادخل عدد غرف النوم">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مساحة غرفة النوم</label>
+                                            <input name="bedrooms_size" value="@properities.bedrooms_size" type="text" class="form-control" placeholder="ادخل مساحة غرفة النوم">
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>عدد دورات المياه</label>
+                                            <input name="bathrooms_num" value="@properities.bathrooms_num" type="number" min="0" class="form-control" placeholder="ادخل عدد دورات المياه">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>مساحة دورة المياه</label>
+                                            <input name="bathrooms_size" value="@properities.bathrooms_size" type="text" class="form-control" placeholder="ادخل المساحة">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>عدد المطابخ</label>
+                                            <input name="kitchen_num" value="@(properities.kitchen_num ?? 0)" type="number" min="0" class="form-control"
+                                                placeholder="ادخل عدد المطابخ">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>مساحة المطبخ</label>
+                                            <input name="kitchen_size" type="text" value="@(properities.kitchen_size ?? 0)" class="form-control"
+                                                placeholder="ادخل مساحة المطبخ">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-12">
+                                        <!-- textarea -->
+                                        <div class="form-group">
+                                            <label>عنوان العقار</label>
+                                            <textarea name="prop_address" class="form-control" rows="1" placeholder="ادخل العنوان">@Model.Product.Address</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>الدولة</label>
+                                            <select name="CountryId" value="" class="form-control">
+                                                @foreach (var item in country)
+                                                {
+                                                    <option value="@item.Id">@item.Name</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>المدينة</label>
+                                            <select name="CityId" id="citySelect" class="form-control">
+                                                @if(Model.City != null)
+                                                {
+                                                    <option value="@Model.City.Id">@Model.City.Name</option>
+
+                                                    @foreach (var item in Model.Cities)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>الحي</label>
+                                            <select name="NeighbId" value="@properities.NeighbId" id="neighbSelect" class="form-control">
+                                                <option value="@Model.Neighb.Id">@Model.Neighb.Name</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Main Image</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="mainImage">Upload Main Image</label>
+                                                <div class="custom-file">
+                                                    <input asp-for="mainImage" type="file" class="custom-file-input" id="mainImage" name="mainImage">
+                                                    <label class="custom-file-label" for="mainImage">Choose main image</label>
+                                                    @if(Model.Product.MainImage != null)
+                                                    {
+                                                        <img style="max-width: 20%;" src="@Model.Product.MainImage" alt="Main Image" class="img-fluid">
+                                                    }
+                                                    else
+                                                    {
+                                                        <img style="max-width: 20%;" src="~/dist/img/no-image.jpg" alt="لا توجد صورة متاحة" class="img-fluid">
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    @for(int n=0; n<@Math.Ceiling(Model.Amenities.Count/5.0); n++)
+                                    {
+                                        <div class="form-group col-md-6">
+                                            <div class="form-group">
+                                                @for(int i=0; i<5; i++)
+                                                {
+                                                    int index = n*5+i;
+                                                    if(index >= Model.Amenities.Count){break;}
+                                                    var amenity = Model.Amenities[index];
+                                                    var featureValue = properities[amenity.FeatureName]?.ToString();
+                                                    var isChecked = featureValue == "1" ? "checked" : "";
+                                                    <div class="custom-control custom-checkbox mb-2">
+                                                        <input class="custom-control-input" type="checkbox"
+                                                        id="@amenity.FeatureName" name="@amenity.FeatureName"
+                                                        value="1" @Html.Raw(isChecked)
+                                                        />  
+                                                        <label for="@amenity.FeatureName" class="custom-control-label">@amenity.DisplayName</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+
+                                        <div class="form-group col-md-6">
+                                            <div class="form-group">
+                                                <label>أنواع الحمامات</label>
+                                                @foreach (var item in Model.Baths)
+                                                {
+                                                     var featureValue = properities[item.FeatureName]?.ToString();
+                                                    var isChecked = featureValue == "1" ? "checked" : "";
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox"
+                                                            id="@item.FeatureName" name="@item.FeatureName"
+                                                            value="1" @Html.Raw(isChecked)
+                                                            />  
+                                                            <label for="@item.FeatureName" class="custom-control-label">@item.Name</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <div class="form-group">
+                                                <label>أنواع الأسرة</label>
+                                                @foreach (var item in Model.Beds)
+                                                {
+                                                    var featureValue = properities[item.FeatureName]?.ToString();
+                                                    var isChecked = featureValue == "1" ? "checked" : "";
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox"
+                                                            id="@item.FeatureName" name="@item.FeatureName"
+                                                            value="1" @Html.Raw(isChecked)
+                                                            />  
+                                                            <label for="@item.FeatureName" class="custom-control-label">@item.Name</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <div class="form-group">
+                                                <label>أنواع المطابخ</label>
+                                                @foreach (var item in Model.Kitchen)
+                                                {
+                                                    var featureValue = properities[item.FeatureName]?.ToString();
+                                                    var isChecked = featureValue == "1" ? "checked" : "";
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox"
+                                                            id="@item.FeatureName" name="@item.FeatureName"
+                                                            value="1" @Html.Raw(isChecked)
+                                                            />  
+                                                            <label for="@item.FeatureName" class="custom-control-label">@item.Name</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h3 class="card-title">صور إضافية</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="arrayImages">رفع صور إضافية</label>
+                                                <div class="custom-file">
+                                                    <input asp-for="arrayImages" type="file" class="custom-file-input" id="arrayImages" name="arrayImages" multiple>
+                                                    <label class="custom-file-label" for="arrayImages">اختر الصور</label>
+                                                </div>
+                                                <input type="hidden" id="arrayImagesJson" name="arrayImagesJson" />
+                                            </div>
+
+                                            <!-- Preview uploaded listing images -->
+                                            <div class="row mt-4" id="previewListingImages">
+                                                @if (lisitingImages != null)
+                                                {
+                                                    foreach (var image in lisitingImages)
+                                                    {
+                                                        <div class="col-sm-3 mb-3">
+                                                            <div class="card">
+                                                                <img src="@image" class="card-img-top img-fluid" alt="Listing Image">
+                                                                <div class="card-body">
+                                                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeExistingImage('@image')">Remove</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-12">
+
+                                    <button type="submit" class="btn btn-info">تحديث <i class="fas fa-edit"></i></button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+
+    @* js for rent duration *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const propertyTypeSelect = document.getElementById('propertyType');
+            const rentalSelect = document.getElementById('rentalPeriod');
+            
+            // Function to handle the disabled state
+            function updateRentalSelectState() {
+                if (propertyTypeSelect.value === '1') { // Sell
+                    rentalSelect.disabled = true;
+                    rentalSelect.value = '0'; // Set to Selling
+                } else { // Rent
+                    rentalSelect.disabled = false;
+                }
+            }
+
+            // Set initial state
+            updateRentalSelectState();
+
+            // Handle changes
+            propertyTypeSelect.addEventListener('change', updateRentalSelectState);
+        });
+    </script>
+
+    @* js for Selecting the City *@
+    <script>
+           const neighborhoods = [
+        @foreach (var neighb in Model.Neighbs)
+        {
+            <text>
+                            { id: @neighb.Id, name: @Html.Raw(Json.Serialize(neighb.Name)), cityId: @neighb.CityId },
+            </text>
+        }
+        ];
+
+        document.getElementById('citySelect').addEventListener('change', function () {
+            const selectedCityId = this.value;
+            const neighbSelect = document.getElementById('neighbSelect');
+
+            // Clear previous neighborhoods and show "Loading..." while updating
+            neighbSelect.innerHTML = '<option disabled selected>Loading...</option>';
+
+            if (selectedCityId) {
+                // Simulate slight delay for better user experience
+                setTimeout(function() {
+                    // Now clear again and add real neighborhoods
+                    neighbSelect.innerHTML = '<option value="">Select Neighborhood</option>';
+
+                    const filteredNeighbs = neighborhoods.filter(n => n.cityId == selectedCityId);
+
+                    filteredNeighbs.forEach(function (neighb) {
+                        const option = document.createElement('option');
+                        option.value = neighb.id;
+                        option.textContent = neighb.name;
+                        neighbSelect.appendChild(option);
+                    });
+                }, 300); // 300 milliseconds (feel free to adjust)
+            } else {
+                // If no city selected, clear neighborhoods
+                neighbSelect.innerHTML = '<option value="">Select Neighborhood</option>';
+            }
+        });
+    </script>
+
+
+    @* js for displaying the array images *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            bsCustomFileInput.init();
+
+            const arrayImages = document.getElementById('arrayImages');
+            const preview = document.getElementById('previewListingImages');
+            const arrayImagesJson = document.getElementById('arrayImagesJson');
+            let totalImages = []; // Store selected files
+
+            // Function to remove an existing image
+            window.removeExistingImage = function(imageUrl) {
+                const imageData = JSON.parse(arrayImagesJson.value || '[]');
+                const updatedData = imageData.filter(img => img !== imageUrl);
+                arrayImagesJson.value = JSON.stringify(updatedData);
+                
+                // Remove the image element from the DOM
+                const imageElement = document.querySelector(`img[src="${imageUrl}"]`).closest('.col-sm-3');
+                if (imageElement) {
+                    imageElement.remove();
+                }
+            };
+
+            arrayImages.addEventListener('change', function (event) {
+                const newFiles = Array.from(event.target.files);
+
+                if (totalImages.length + newFiles.length > 4) {
+                    alert('You can upload a maximum of 4 images total.');
+                    arrayImages.value = '';
+                    return;
+                }
+
+                totalImages = totalImages.concat(newFiles);
+
+                // Clear the preview and re-render all images
+                preview.innerHTML = '';
+
+                // Create an array to store image data
+                const imageData = [];
+
+                totalImages.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const col = document.createElement('div');
+                        col.className = 'col-sm-3 mb-3';
+
+                        col.innerHTML = `
+                            <div class="card">
+                                <img src="${e.target.result}" class="card-img-top img-fluid" alt="Listing Image">
+                                <div class="card-body">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removeImage(${index})">Remove</button>
+                                </div>
+                            </div>
+                        `;
+                        preview.appendChild(col);
+
+                        // Add image data to array
+                        imageData.push({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: e.target.result
+                        });
+
+                        // Update hidden input with JSON data
+                        arrayImagesJson.value = JSON.stringify(imageData);
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                // Reset the input so user can add more images again
+                arrayImages.value = '';
+            });
+
+            // Function to remove an image
+            window.removeImage = function(index) {
+                totalImages.splice(index, 1);
+                const imageData = totalImages.map(file => ({
+                    name: file.name,
+                    type: file.type,
+                    size: file.size
+                }));
+                arrayImagesJson.value = JSON.stringify(imageData);
+                
+                // Re-render preview
+                const event = new Event('change');
+                arrayImages.dispatchEvent(event);
+            };
+        });
+    </script>
+
+
+
+}
+
+
+

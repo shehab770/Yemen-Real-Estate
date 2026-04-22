@@ -1,0 +1,126 @@
+@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "Admin Profile";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Admin/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name</span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-user"></i> ملفي الشخصي</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الملف الشخصي</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-4">
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle"src="@Model.User.Image" alt="@Model.User.Name">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.User.Name</h3>
+                            <p class="text-muted text-center"> مسؤول النظام</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills profile-tabs">
+                                <li class="nav-item"><a>تعديل الملف الشخصي</a></li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active">
+                                    <form class="form-horizontal" action="/Admin/UpdateProfile" method="post" enctype="multipart/form-data">
+                                        <div class="form-group row">
+                                            <label for="inputName" class="col-sm-2 col-form-label">الاسم</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="inputName" name="Name" value="@Model.User.Name" placeholder="الاسم">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputEmail" class="col-sm-2 col-form-label">البريد الإلكتروني</label>
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="inputEmail" value="@Model.User.Email" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputPhone" class="col-sm-2 col-form-label">الهاتف</label>
+                                            <div class="col-sm-10">
+                                                <input type="tel" class="form-control" id="inputPhone" name="Phone" value="@Model.User.Phone" placeholder="Phone">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="inputProfileImage" class="col-sm-2 col-form-label">صورة الملف الشخصي</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" class="form-control" id="inputProfileImage" value="@Model.User.Image" name="Image" accept="image/*">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="offset-sm-2 col-sm-10">
+                                                <button type="submit" class="btn btn-danger">تحديث الملف الشخصي</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

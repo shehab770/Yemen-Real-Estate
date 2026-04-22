@@ -1,0 +1,281 @@
+﻿@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "لوحة تحكم الإداري";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Admin/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name</span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">لوحة تحكم الإداري</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Admin/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">لوحة التحكم</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Statistics Cards -->
+            <div class="row">
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-info">
+                        <div class="inner">
+                            <h3>@Model.Users?.Count(u => u.Role == UserRole.Seller && u.IsBlocked == false)</h3>
+                            <p>البائعين النشطين</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <a href="/Admin/ShowSellers" class="small-box-footer">إدارة البائعين <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>@Model.Users?.Count(u => u.Role == UserRole.Buyer && u.IsBlocked == false)</h3>
+                            <p>المشترين النشطين</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <a href="/Admin/ShowBuyers" class="small-box-footer">إدارة المشترين <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-warning">
+                        <div class="inner">
+                            <h3>@Model.AllProducts?.Count(p => p.IsFeatured)</h3>
+                            <p>العقارات المميزة</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <a href="/Admin/FeaturedProperties" class="small-box-footer">عرض العقارات المميزة <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-primary">
+                        <div class="inner">
+                            <h3>@Model.AllProducts?.Count()</h3>
+                            <p>إجمالي العقارات</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <a href="/Admin/ShowProperties" class="small-box-footer">عرض جميع العقارات <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-danger">
+                        <div class="inner">
+                            <h3>@Model.AllProducts?.Count(p => p.isAccepted == PropertyStatus.Rejected)</h3>
+                            <p>العقارات المرفوضة</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <a href="/Admin/ShowProperties?status=Rejected" class="small-box-footer">عرض العقارات المرفوضة <i class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Row -->
+            <div class="row">
+                <!-- Left Column -->
+                <section class="col-lg-7 connectedSortable">
+                    <!-- Admin Actions -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-primary">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-tools"></i> ضوابط الإداري
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <a href="/Admin/ShowProperties" class="btn btn-warning btn-block mb-3">
+                                        <i class="fas fa-home"></i> جميع العقارات
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="/Admin/ShowArticles?status=false" class="btn btn-info btn-block mb-3">
+                                        <i class="fas fa-chart-bar"></i> عرض مقالات الموافقات
+                                    </a>
+                                    <a href="/Admin/Settings" class="btn btn-success btn-block mb-3">
+                                        <i class="fas fa-cog"></i> إعدادات النظام
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-info">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-history"></i> الأنشطة الحديثة
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                @if(Model.Products != null)
+                                {
+                                    @foreach (var product in Model.Products.OrderByDescending(p => p.UpdatedAt).Take(5))
+                                    {
+                                        <div class="time-label">
+                                            <span class="bg-info">@product.UpdatedAt?.ToString("MMM dd")</span>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-home bg-primary"></i>
+                                            <div class="timeline-item">
+                                                <span class="time"><i class="fas fa-clock"></i> @product.UpdatedAt?.ToString("HH:mm")</span>
+                                                <h3 class="timeline-header">
+                                                    @(product.isAccepted == PropertyStatus.Pending ? "عقار جديد في انتظار المراجعة" : 
+                                                      product.isAccepted == PropertyStatus.Approved ? "عقار معتمد" : "عقار مرفوض")
+                                                </h3>
+                                                <div class="timeline-body">
+                                                    @product.Address
+                                                </div>
+                                                <div class="timeline-footer">
+                                                    <a href="/Product/PropertyDetails/@product.ProductId" class="btn btn-primary btn-sm">مراجعة</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> لا توجد أنشطة حديثة.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right Column -->
+                <section class="col-lg-5 connectedSortable">
+                    <!-- Property Status Chart -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-success">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-chart-pie"></i> نظرة عامة على حالة العقارات
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="propertyStatusChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- User Registration Chart -->
+                    <div class="card">
+                        <div class="card-header bg-gradient-warning">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-chart-line"></i> تسجيلات المستخدمين
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="userRegistrationChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function () {
+            // Property Status Chart
+            var ctx = document.getElementById('propertyStatusChart').getContext('2d');
+            var propertyStatusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['إجمالي العقارات', 'العقارات المميزة', 'العقارات المرفوضة'],
+                    datasets: [{
+                        data: [
+                            @Model.AllProducts?.Count() ?? 0,
+                            @Model.AllProducts?.Count(p => p.IsFeatured ) ?? 0,
+                            @Model.AllProducts?.Count(p => p.isAccepted == PropertyStatus.Rejected) ?? 0,
+                        ],
+                        backgroundColor: [
+                            '#007bff',  // Blue for Total
+                            '#ffc107',  // Yellow for Featured
+                            '#dc3545'   // Red for Rejected
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // User Registration Chart
+            var userCtx = document.getElementById('userRegistrationChart').getContext('2d');
+            var userRegistrationChart = new Chart(userCtx, {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [{
+                        label: 'البائعين',
+                        data: [12, 19, 15, 25, 22, 30],
+                        borderColor: '#28a745',
+                        tension: 0.1
+                    }, {
+                        label: 'المشترين',
+                        data: [30, 45, 35, 50, 40, 60],
+                        borderColor: '#007bff',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

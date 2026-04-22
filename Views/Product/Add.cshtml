@@ -1,0 +1,440 @@
+﻿@model webProgramming.Models.ViewModels
+@{
+    ViewData["Title"] = "إضافة-عقار";
+    Layout = "Admin_Layout";
+}
+
+
+<!-- لوحة التحكم الخاصة بنا -->
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Seller/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+        style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="_AgnetDahboardPartial" />
+    <!-- /.sidebar -->
+</aside>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>العقارات</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item"><a href="/Seller/ShowProperities">العقارات</a></li>
+                        <li class="breadcrumb-item active">إنشاء عقار</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- general form elements disabled -->
+                    <div style="width:200%;" class="card card-warning">
+                        <div class="card-header">
+                            <h3 class="card-title">إنشاء عقار</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            @{
+                                if (TempData["True"] != null)
+                                {
+                                    <div class="alert alert-success">
+                                        @TempData["True"]
+                                    </div>
+                                }
+                            }
+
+                            @{
+                                if (TempData["Wrong"] != null)
+                                {
+                                    <div class="alert alert-danger">
+                                        @TempData["Wrong"]
+                                    </div>
+                                }
+                            }
+                            <form role="form" method="post" asp-action="Store" asp-controller="Product"
+                            enctype="multipart/form-data">
+                                <input type="text" name="SellerId" value="@Model.User?.UserId" hidden />
+
+                                <div class="row">
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>عنوان العقار</label>
+                                            <input type="text" name="prop_tilte" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-12">
+                                        <!-- textarea -->
+                                        <div class="form-group">
+                                            <label>وصف العقار</label>
+                                            <textarea name="prop_desc" class="form-control" rows="3"
+                                            placeholder="أدخل ..."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>نوع العقار</label>
+                                            <select name="prop_type" class="form-control" id="propertyType">
+                                                @foreach(PropertyType type in Enum.GetValues(typeof(PropertyType)))
+                                                {
+                                                    if((int)type <= 2)
+                                                    {
+                                                        <option value="@((int)type)">@type</option>
+                                                    }
+                                                    
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>نوع السكن</label>
+                                            <select name="estate_type" class="form-control">
+                                                @foreach(HouseType houseType in Enum.GetValues(typeof(HouseType)))
+                                                {
+                                                    <option value="@((int)houseType)">@houseType</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مدة الإيجار</label>
+                                            <select name="rent_type" class="form-control" id="rentalPeriod" disabled>
+                                                @foreach(PropertyCategoryType duration in Enum.GetValues(typeof(PropertyCategoryType)))
+                                                {
+                                                    <option value="@((int)duration)">@duration</option>
+                                                }
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>سنة البناء</label>
+                                            <input name="prop_date" type="date" class="form-control"
+                                            placeholder="أدخل ...">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مساحة العقار</label>
+                                            <input name="prop_size" type="number" min="0" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل المساحة بالمتر المربع (مثال: 350)</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>سعر العقار</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input name="prop_price" type="number" class="form-control"
+                                                       placeholder="أدخل السعر" min="0" step="0.01" required>
+                                            </div>
+                                            <small class="form-text text-muted">أدخل السعر بالدولار (مثال: 1000.00)</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>الغرف</label>
+                                            <input name="rooms_num" type="number" min="0" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مساحة الغرفة</label>
+                                            <input name="rooms_size" type="number" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل المساحة بالمتر المربع (مثال: 350)</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>غرف النوم</label>
+                                            <input name="bedrooms_num" type="number" min="0" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>مساحة غرفة النوم</label>
+                                            <input name="bedrooms_size" type="number" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل المساحة بالمتر المربع (مثال: 350)</small>
+                                    </div>
+
+
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>الحمامات</label>
+                                            <input name="bathrooms_num" type="number" min="0" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>مساحة الحمام</label>
+                                            <input name="bathrooms_size" type="number" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل المساحة بالمتر المربع (مثال: 350)</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>المطبخ</label>
+                                            <input name="kitchen_num" type="number" min="0" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>مساحة المطبخ</label>
+                                            <input name="kitchen_size" type="number" class="form-control"
+                                            placeholder="أدخل ..." required>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل المساحة بالمتر المربع (مثال: 350)</small>
+                                    </div>
+
+                                    <div class="form-group col-md-12">
+                                        <!-- textarea -->
+                                        <div class="form-group">
+                                            <label>عنوان العقار</label>
+                                            <textarea name="prop_address" class="form-control" rows="1"
+                                            placeholder="أدخل ..." required></textarea>
+                                        </div>
+                                        <small class="form-text text-muted">أدخل العنوان (مثال: 123 شارع الرئيسي، أي مدينة،  صنعاء)</small>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>البلد</label>
+                                            <select name="CountryId" class="form-control">
+                                                @if(Model.Countries != null)
+                                                {
+                                                    foreach (var item in Model.Countries)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="1">لا يوجد بلد</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group col-md-6">
+                                        <!-- select -->
+                                        <div class="form-group">
+                                            <label>المدينة</label>
+                                            <select name="CityId" id="citySelect" class="form-control" required>
+                                                <option>اختر المدينة</option>
+                                                @if(Model.Cities != null)
+                                                {
+                                                    @foreach (var item in Model.Cities)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>الحي</label>
+                                            <select name="NeighbId" id="neighbSelect" class="form-control" required>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h3 class="card-title">الصورة الرئيسية</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="mainImage">رفع الصورة الرئيسية</label>
+                                                <div class="custom-file">
+                                                    <input asp-for="mainImage" type="file" class="custom-file-input"
+                                                        id="mainImage" name="mainImage">
+                                                    <label class="custom-file-label" for="mainImage">اختر الصورة الرئيسية</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @if (@Model.Amenities.Count > 0)
+                                    {
+                                        for (int n = 0; n < Math.Ceiling(Model.Amenities.Count / 5.0); n++)
+                                        {
+                                            <div class="form-group col-md-6">
+                                                <div class="form-group">
+                                                    @for (int i = 0; i < 5; i++)
+                                                    {
+                                                        var index = n * 5 + i;
+                                                        if (index < Model.Amenities.Count)
+                                                        {
+                                                            var amenity = Model.Amenities[index];
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input class="custom-control-input" type="checkbox"
+                                                                    id="customCheckbox@(index + 1)" name="@amenity.FeatureName"
+                                                                    value="1">
+                                                                <label for="customCheckbox@(index + 1)"
+                                                                    class="custom-control-label">@amenity.DisplayName</label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+
+                                    
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>أنواع الحمامات</label>
+                                            @foreach (var item in Model.Baths)
+                                            {
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox"
+                                                        id="@item.FeatureName" name="@item.FeatureName"
+                                                        value="1">
+                                                    <label for="@item.FeatureName"
+                                                        class="custom-control-label">@item.Name</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>أنواع الأسرة</label>
+                                            @foreach (var item in Model.Beds)
+                                            {
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox"
+                                                        id="@item.FeatureName" name="@item.FeatureName"
+                                                        value="1">
+                                                    <label for="@item.FeatureName"
+                                                        class="custom-control-label">@item.Name</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-md-6">
+                                        <div class="form-group">
+                                            <label>أنواع المطابخ</label>
+                                            @foreach (var item in Model.Kitchen)
+                                            {
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox"
+                                                        id="@item.FeatureName" name="@item.FeatureName"
+                                                        value="1">
+                                                    <label for="@item.FeatureName"
+                                                        class="custom-control-label">@item.Name</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="card mb-4">
+                                        <div class="card-header">
+                                            <h3 class="card-title">صور القائمة</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-group">
+                                                <label for="arrayImages">رفع صور القائمة</label>
+                                                <div class="custom-file">
+                                                    <input asp-for="arrayImages" type="file" class="custom-file-input"
+                                                        id="arrayImages" name="arrayImages" multiple>
+                                                    <label class="custom-file-label" for="arrayImages">اختر صور القائمة</label>
+                                                </div>
+                                                <input type="hidden" id="arrayImagesJson" name="arrayImagesJson" />
+                                            </div>
+
+                                            <!-- Preview uploaded listing images -->
+                                            <div class="row mt-4" id="previewListingImages">
+                                                <!-- Dynamically add uploaded images previews here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-md-12">
+
+                                    <button type="submit" class="btn btn-info">إنشاء <i
+                                            class="fas fa-plus"></i></button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+
+    <partial name="_ScriptsPartial" />
+
+    
+}

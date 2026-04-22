@@ -1,0 +1,219 @@
+﻿<div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="@(Model.User.Image)" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+            @if(Model.User.Role == UserRole.Seller)
+            {
+                <a href="/Seller/SellerProfile" class="d-block">@Model.User.Name</a>
+            }
+            @if(Model.User.Role == UserRole.Buyer)
+            {
+                <a href="/Customer/BuyerProfile" class="d-block">@Model.User.Name</a>
+            }
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+           @if(Model.User.Role == UserRole.Seller)
+           {
+                <li class="nav-item has-treeview menu-open">
+                    <a href="/Seller/Index" class="nav-link active">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            لوحة التحكم
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="/Seller/ShowProperties" class="nav-link">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            العقارات
+                             <i class="fas fa-angle-left right"></i>
+                            <span class="badge badge-info right">@(ViewBag.PropertyCount ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Seller/ShowProperties" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>كل العقارات</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Product/Add" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>إضافة عقار جديد</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Seller/ShowProperties?status=Approved" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المقبولة</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Seller/ShowProperties?featured=true" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المميزة</p>
+                            </a>
+                        </li>
+                         <li class="nav-item">
+                            <a href="/Seller/ShowProperties?status=Rejected" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المرفوضة</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                 <li class="nav-item has-treeview">
+                    <a href="/Seller/FavoriteProperties" class="nav-link">
+                        <i class="nav-icon fas fa-heart"></i>
+                        <p>
+                            المفضلة
+                            <span class="badge badge-warning right">@ViewBag.FavCount</span>
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-newspaper"></i>
+                        <p>
+                            المقالات
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Seller/ShowArticles" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>كل المقالات</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Articals/Add" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>كتابة مقالة جديدة</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            الرسائل
+                            <i class="fas fa-angle-left right"></i>
+                            <span class="badge badge-warning right">@(ViewBag.unreadMessages ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Chat/Messages" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>الوارد</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user-cog"></i>
+                        <p>
+                            الحساب
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Seller/SellerProfile" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>ملفي الشخصي</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+           }
+
+            @if(Model.User.Role == UserRole.Buyer)
+            {
+                <li class="nav-item has-treeview menu-open">
+                    <a href="/Customer/Index" class="nav-link active">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            لوحة التحكم
+                        </p>
+                    </a>
+                </li>
+
+                 <li class="nav-item has-treeview">
+                    <a href="/Customer/FavoriteProperties" class="nav-link">
+                        <i class="nav-icon fas fa-heart"></i>
+                        <p>
+                            العقارات المفضلة
+                            <span class="badge badge-warning right">@ViewBag.FavCount</span>
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="/Chat/Messages" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            الرسائل
+                            <i class="fas fa-angle-left right"></i>
+                            <span class="badge badge-warning right">@(ViewBag.unreadMessages ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                         <li class="nav-item">
+                            <a href="/Chat/Messages" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>الوارد</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user-cog"></i>
+                        <p>
+                            الحساب
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Customer/BuyerProfile" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>ملفي الشخصي</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            }
+            <li class="nav-item">
+                <form asp-controller="Auth" asp-action="Logout" method="post" class="nav-link">
+                    <button type="submit" class="btn btn-link nav-link text-danger">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>تسجيل الخروج</p>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>

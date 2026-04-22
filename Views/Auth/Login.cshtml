@@ -1,0 +1,296 @@
+﻿@model webProgramming.Models.LoginModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+    Layout = "~/Views/Auth/Shared/Login_RegisterLayout.cshtml";
+}
+
+<div class="login-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="login-box">
+                    <div class="wrap-modal">
+                        <div class="images">
+                            <img src="~/assets/images/logo/logo%402x.png" alt="شعار">
+                            <div class="mark-logo">
+                                <img src="~/assets/images/logo/logo%402x.png" alt="شعار">
+                            </div>
+                        </div>
+                        <div class="content">
+                            <div class="title-login">مرحباً بعودتك!</div>
+                            <p class="text-muted mb-4">يرجى تسجيل الدخول إلى حسابك</p>
+                            <div class="comments">
+                                <div class="respond-comment">
+                                    <form asp-action="CheckLogin" asp-controller="Auth" class="comment-form form-submit">
+                                        @if (TempData["Status"] != null)
+                                        {
+                                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                @TempData["Status"]
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        }
+
+                                        @if (TempData["Wrong"] != null)
+                                        {
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                @TempData["Wrong"]
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        }
+
+                                        @if (TempData["Blocked"] != null)
+                                        {
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                @TempData["Blocked"]
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        }
+
+                                        @if (!ViewData.ModelState.IsValid)
+                                        {
+                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                <div asp-validation-summary="All" class="text-danger"></div>
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="إغلاق">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        }
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">البريد الإلكتروني</label>
+                                            <div class="input-group">
+                                                <input type="email" asp-for="Email" class="form-control" placeholder="أدخل بريدك الإلكتروني">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <fieldset class="form-group">
+                                            <label class="fw-6">كلمة المرور</label>
+                                            <div class="input-group">
+                                                <input type="password" asp-for="Password" class="form-control" placeholder="أدخل كلمة المرور">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-lock"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span asp-validation-for="Password" class="text-danger"></span>
+                                        </fieldset>
+
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="rememberMe">
+                                                <label class="custom-control-label" for="rememberMe">تذكرني</label>
+                                            </div>
+                                            <a href="#" class="text-primary">نسيت كلمة المرور؟</a>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary btn-block">
+                                            <i class="fas fa-sign-in-alt me-2"></i>تسجيل الدخول
+                                        </button>
+
+                                        <div class="text-center mt-4" dir="rtl">
+                                            <p class="mb-2">ليس لديك حساب؟ <a href="/Auth/Register" class="text-primary">إنشاء حساب</a></p>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // التحقق من رسالة الخطأ
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+            Swal.fire({
+                title: 'خطأ!',
+                text: '@TempData["ErrorMessage"]',
+                icon: 'error',
+                confirmButtonText: 'موافق'
+            });
+            </text>
+        }
+        // التعامل مع الردود JSON باستخدام SweetAlert
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.showSweetAlert) {
+                    Swal.fire({
+                        title: response.title || 'إشعار',
+                        text: response.message,
+                        icon: response.icon || 'info',
+                        confirmButtonText: 'موافق'
+                    });
+                }
+            } catch (e) {
+                // ليس رد JSON أو لا يحتوي خصائص SweetAlert
+            }
+        });
+    });
+</script>
+
+<style>
+    .login-page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background-color: #f8f9fa;
+        padding: 40px 0;
+    }
+
+    .login-box {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .wrap-modal {
+        display: flex;
+        background: white;
+    }
+
+    .images {
+        position: relative;
+        width: 40%;
+        background: #2d3954;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .images img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .mark-logo {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .content {
+        width: 60%;
+        padding: 40px;
+    }
+
+    .title-login {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3954;
+        margin-bottom: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #2d3954;
+        margin-bottom: 8px;
+    }
+
+    .input-group {
+        border: 1px solid #e5e5e5;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .input-group-text {
+        background: transparent;
+        border: none;
+        color: #6c757d;
+    }
+
+    .form-control {
+        border: none;
+        padding: 12px 15px;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+    }
+
+    .btn-primary {
+        background: #2d3954;
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #1a2533;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-primary {
+        border-color: #2d3954;
+        color: #2d3954;
+    }
+
+    .btn-outline-primary:hover {
+        background: #2d3954;
+        color: white;
+    }
+
+    .social-login {
+        margin-top: 20px;
+    }
+
+    .alert {
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    .text-danger {
+        color: #dc3545;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    @@media (max-width: 991px) {
+        .wrap-modal {
+            flex-direction: column;
+        }
+
+        .images, .content {
+            width: 100%;
+        }
+
+        .images {
+            padding: 20px;
+        }
+
+        .mark-logo {
+            position: relative;
+            bottom: auto;
+            left: auto;
+            transform: none;
+            margin-top: 20px;
+        }
+    }
+</style>

@@ -1,0 +1,286 @@
+@model webProgramming.Models.ViewModels
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "تفاصيل العقار";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light"> @Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="_AgnetDahboardPartial" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1><i class="fas fa-home"></i> تفاصيل العقار</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Seller/Index"><i class="fas fa-tachometer-alt"></i> الرئيسية</a></li>
+                        <li class="breadcrumb-item"><a href="/Seller/ShowProperties">العقارات</a></li>
+                        <li class="breadcrumb-item active">تفاصيل العقار</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-gradient-primary">
+                            <h3 class="card-title text-white">
+                                <i class="fas fa-info-circle"></i> معلومات العقار
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            @{
+                                var properities = JsonConvert.DeserializeObject<dynamic>(Model.Product.Properties);
+                                var listingImages = JsonConvert.DeserializeObject<List<string>>(Model.Product.ListingImages ?? "[]");
+                            }
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="property-image-container mb-4">
+                                        @if (!string.IsNullOrEmpty(Model.Product.MainImage))
+                                        {
+                                            <img src="@Model.Product.MainImage" class="img-fluid rounded" alt="صورة العقار الرئيسية">
+                                        }
+                                        else
+                                        {
+                                            <img src="~/dist/img/no-image.jpg" class="img-fluid rounded" alt="لا توجد صورة متاحة">
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h3 class="property-title">@Model.Product.Title</h3>
+                                    <h4 class="property-title">Product Id: @Model.Product.ProductId</h4>
+                                    <h4 class="property-status @(Model.Product.isAccepted == PropertyStatus.Approved ? "text-success" : 
+                                        Model.Product.isAccepted == PropertyStatus.Pending ? "text-warning" : "text-danger") mb-0">
+                                        الحالة: @(Model.Product.isAccepted == PropertyStatus.Approved ? "معتمد" :
+                                             Model.Product.isAccepted == PropertyStatus.Pending ? "معلق" : "غير معتمد بعد")
+                                        </h4>
+                                        <br>
+                                    <div class="property-price mb-3">
+                                        <h4>$@Model.Product.Price</h4>
+                                    </div>
+                                    <div class="property-details">
+                                        <p><strong>المساحة:</strong> @properities.prop_size</p>
+                                        <p><strong>سنة البناء:</strong> @Model.Product.YearBuilt</p>
+                                        <p><strong>النوع:</strong> @Model.Product.Type</p>
+                                        <p><strong>نوع العقار:</strong> @Model.Product.EstateType</p>
+                                            <p><strong>نوع الإيجار:</strong> @Model.Product.CategoryType</p>
+                                        <p><strong>العنوان:</strong> @Model.Product.Address</p>
+                                        <p><strong>المدينة:</strong> @Model.City.Name</p>
+                                        <p><strong>الحي:</strong> @Model.Neighb.Name</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h4>تفاصيل البائع</h4>
+                                    <div class="property-details">
+                                        <p><strong>الاسم:</strong> @Model.Seller.Name</p>
+                                        <p><strong>البريد الإلكتروني:</strong> @Model.Seller.Email</p>
+                                        <p><strong>الهاتف:</strong> @Model.Seller.Phone</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h4>المميزات</h4>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <ul class="list-unstyled">
+                                                <li><i class="fas fa-bed"></i> @properities.bedrooms_num غرف نوم</li>
+                                                <li><i class="fas fa-bath"></i> @properities.bathrooms_num حمامات</li>
+                                                <li><i class="fas fa-door-open"></i> @properities.rooms_num غرف</li>
+                                                <li><i class="fas fa-car"></i> @properities.garage_num جراج</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>أنواع الحمامات</h5>
+                                            <ul class="list-unstyled">
+                                                @foreach (var bath in Model.Baths)
+                                                {
+                                                    var featureValue = properities[bath.FeatureName]?.ToString();
+                                                    @if(featureValue == "1")
+                                                    {
+                                                        <li>@bath.Name</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>أنواع الغرف</h5>
+                                            <ul class="list-unstyled">
+                                                @foreach (var bed in Model.Beds)
+                                                {
+                                                    var featureValue = properities[bed.FeatureName]?.ToString();
+                                                    @if(featureValue == "1")
+                                                    {
+                                                        <li>@bed.Name</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                         <div class="col-md-4">
+                                            <h5>أنواع المطابخ</h5>
+                                            <ul class="list-unstyled">
+                                                @foreach (var kitchen in Model.Kitchen)
+                                                {
+                                                    var featureValue = properities[kitchen.FeatureName]?.ToString();
+                                                    @if(featureValue == "1")
+                                                    {
+                                                        <li>@kitchen.Name</li>
+                                                    }
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h4>Amenities</h4>
+                                    <div class="row">
+                                        @for(int n=0; n<Math.Ceiling(Model.Amenities.Count/5.0); n++)
+                                        {
+                                             <div class="col-md-4">
+                                                <ul class="list-unstyled">
+                                                    @for(int i=0; i<5; i++)
+                                                    {
+                                                        int index = n*5+i;
+                                                        if(index >= Model.Amenities.Count){break;}
+                                                        var amenity = Model.Amenities[index];
+                                                        var featureValue = properities[amenity.FeatureName]?.ToString();
+                                                        @if(featureValue == "1")
+                                                        {
+                                                            <li><i class="@amenity.IconClass"></i> @amenity.Name</li>
+                                                        }
+                                                    }
+
+                                                </ul>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (listingImages != null && listingImages.Any())
+                            {
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <h4>Additional Images</h4>
+                                        <div class="row">
+                                            @foreach (var image in listingImages)
+                                            {
+                                                <div class="col-md-3 mb-3">
+                                                    <img src="@image" class="img-fluid rounded" alt="صورة العقار">
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            
+
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="property-actions">
+
+                                       @if(Model.User?.Role == UserRole.Seller)
+                                       {
+                                            <a href="/Product/Edit/@Model.Product.ProductId" class="btn btn-info">
+                                                <i class="fas fa-edit"></i> تعديل العقار
+                                            </a>
+                                             <a href="/Product/Delete/@Model.Product.ProductId" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this property?')">
+                                                <i class="fas fa-trash"></i> حذف العقار
+                                            </a>
+
+                                            <a href="/Seller/ShowProperties" class="btn btn-secondary">
+                                                <i class="fas fa-arrow-left"></i> العودة إلى العقارات
+                                            </a>
+
+                                            @if(Model.Product.isAccepted == PropertyStatus.Rejected)
+                                            {
+                                                <div class="alert alert-danger">
+                                                    <p>This property has been rejected. Reason: @Model.Product.BlockedReason</p>
+                                                </div>
+                                            }
+                                       }
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Styles {
+    <style>
+        .property-image-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
+        
+        .property-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .property-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .property-price {
+            color: #28a745;
+            font-size: 20px;
+        }
+        
+        .property-details p {
+            margin-bottom: 10px;
+        }
+        
+        .property-actions {
+            margin-top: 20px;
+        }
+        
+        .property-actions .btn {
+            margin-right: 10px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function changeMainImage(src) {
+            document.getElementById('mainImage').src = src;
+        }
+    </script>
+} 

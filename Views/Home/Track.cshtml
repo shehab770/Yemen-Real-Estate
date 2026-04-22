@@ -1,0 +1,95 @@
+﻿@model webProgramming.Models.ViewModels
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Track Property";
+    Layout = "_MyLayout";
+}
+
+<section class="flat-featured wg-dream home3">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="heading-section center">
+                    <h2>تتبع العقار</h2>
+                    <p class="text-color-4"> تابع عقارك بسهولة</p>
+                </div>
+                <div class="flat-tabs themesflat-tabs">
+
+                    <div class="content-tab">
+                        <div class="content-inner tab-content">
+                            <div class="wrap-item flex">
+                                <!-- col 1 -->
+                            @if(Model.Product != null)
+                            {
+
+                                        var properties = JsonConvert.DeserializeObject<dynamic>(Model.Product.Properties);
+                                        var listingImages = JsonConvert.DeserializeObject<dynamic>(Model.Product.ListingImages);
+
+
+                                    <div class="box box-dream hv-one">
+                                        <div class="image-group relative ">
+                                            <span class="featured fs-12 fw-6">المميزة</span>
+                                            <span class="featured style fs-12 fw-6">For @Model.Product.Type</span>
+                                            <div class="swiper-container noo carousel-2 img-style">
+                                                @* Main Properity Image *@
+                                                <a href="/Home/PropDetail/@Model.Product.ProductId" class="icon-plus"><img
+                                                        src="~/assets/images/icon/plus.svg" alt="images">
+                                                </a>
+
+                                                <div class="swiper-wrapper ">
+                                                    @* Listing Properity Images *@
+                                                    
+                                                    @if(listingImages != null)
+                                                    {
+                                                        @foreach(var image in listingImages)
+                                                        {
+                                                             <div class="swiper-slide"><img src="@image"alt="images"></div>
+                                                        }
+                                                    }
+
+                                                </div>
+
+                                                <div class="pagi2">
+                                                    <div class="swiper-pagination2"> </div>
+                                                </div>
+                                                <div class="swiper-button-next2 "><i class="fal fa-arrow-right"></i></div>
+                                                <div class="swiper-button-prev2 "><i class="fal fa-arrow-left"></i> </div>
+                                            </div>
+                                        </div>
+                                        <div class="content">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h3 class="link-style-1"><a href="/Home/PropDetail/@Model.Product.ProductId">@(Model.Product.Title ?? "لا يوجد عنوان")</a></h3>
+                                                <button class="btn favorite-btn" onclick="toggleFavorite('@Model.Product.ProductId')" id="favorite-@Model.Product.ProductId" style="background-color: transparent; border: none;">
+                                                    <i class="@(Model.Favors?.FirstOrDefault(f => f.ProductId == Model.Product.ProductId && f.UserId == Model.User?.UserId) != null ? "fas" : "far") fa-heart" style="cursor: pointer; font-size: 22px; transition: all 0.3s ease; color: #4CAF50; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));"></i>
+                                                </button>
+                                            </div>
+                                            <div class="text-address">
+                                                <p class="p-12">@Model.Product.Address</p>
+                                            </div>
+                                            <div class="money fs-18 fw-6 text-color-3"><a
+                                                    href="/Home/PropDetail/@Model.Product.ProductId">$@Model.Product.Price</a></div>
+                                            <div class="icon-box flex">
+                                                <div class="icons icon-1 flex"><span>غرف: </span>@properties?.bedrooms_num<span
+                                                        class="fw-6"></span></div>
+                                                <div class="icons icon-2 flex"><span>حمامات:  </span>@properties?.bathrooms_num<span
+                                                        class="fw-6"></span></div>
+                                                <div class="icons icon-3 flex"><span>مساحة: </span><span
+                                                        class="fw-6">@properties?.prop_size</span></div>
+                                            </div>
+                                            <div class="days-box flex justify-space align-center">
+                                                <a class="compare flex align-center fw-6" href="#">@(Model.Sellers?.FirstOrDefault(s=> s.UserId == Model.Product.SellerId)?.Name ?? "NestHood")</a>
+                                                <div class="img-author hv-tool" data-tooltip="Kathryn Murphy"><img
+                                                        src="@(Model.Sellers?.FirstOrDefault(s=> s.UserId == Model.Product.SellerId)?.Image ?? "assets/images/author/author-31.jpg")" alt="images"></div>
+                                                <div class="days">@Model.Product.YearBuilt</div>
+                                            </div>
+                                        </div>
+                                        </div>
+                            }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

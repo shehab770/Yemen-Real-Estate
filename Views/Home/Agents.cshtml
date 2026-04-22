@@ -1,0 +1,50 @@
+@model webProgramming.Models.ViewModels;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "Agents";
+    Layout = "_Mylayout";
+
+}
+
+  <section class="flat-title " >
+                <div class="container">
+                    <div class="row">                      
+                        <div class="col-lg-12">
+                            <div class="title-inner style">
+                                <div class="title-group fs-12"><a class="home fw-6 text-color-3" href="/">الرئيسية</a><span >وسطاؤنا</span></div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </section>
+            
+            <section class="tf-section2 flat-agent flat-property page style" >
+                <div class="container">
+                    <div class="row flex">     
+
+                        @if(Model.Sellers != null)
+                        {
+                            @foreach(var seller in Model.Sellers)
+                            {
+                                <div class="col-lg-4 col-md-6">
+                                    <div class="box hover-img">
+                                        <div class="images relative flex-none img-style">
+                                            <img src="@seller.Image" alt="images">
+                                        </div>
+                                        <div class="content ">
+                                            <h3 class="link-style-1"><a href="/Home/AgentDetail/@seller.UserId">@seller.Name</a></h3>
+                                            <p class="">وسيط</p>
+                                            <div class="icon-group">
+                                                <div class="icon-phone"><a href="tel:@seller.Phone" class=" fw-7 font-2">@seller.Phone</a></div>
+                                                <div class="icon-email"><a href="mailto:@seller.Email" class="font-2">@seller.Email</a></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
+
+<partial name="_ContactPartial" />

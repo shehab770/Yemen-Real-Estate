@@ -1,0 +1,56 @@
+﻿@model webProgramming.Models.ViewModels;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = "About Us";
+	 Layout = "_Mylayout";
+}
+
+    <section class="flat-title " >
+        <div class="container">
+            <div class="row">                      
+                <div class="col-lg-12">
+                    <div class="title-inner style">
+                        <div class="title-group fs-12"><a class="home fw-6 text-color-3" href="/">الرئيسية</a><span >عن دارك</span></div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </section>
+    
+    @if(Model.AboutUs != null)
+	{
+		<section class="flat-about" >
+        	<div class="container">
+        	    <div class="row">                      
+        	        <div class="col-lg-7 col-md-7">
+        	            <div class="heading-about">
+                        <h1>بعنا اكثر من @ViewBag.Count</h1>
+@if (Model.User != null)
+{
+    <p>في دَارُك @Model.User.Name مرحباً</p>
+}
+else
+{
+    <p>مرحباً بكم في دَارُك </p>
+}
+        	            </div>
+        	        </div>  
+        	        <div class="col-lg-5 col-md-5">
+        	            <div class="video-box center">
+        	                <div class="post-video flex-five">      
+        	                    <img class="img-2" src="@Model.AboutUs.Image" alt="images">                       
+        	                </div>
+        	            </div>
+        	        </div>
+        	    </div>
+        	</div>
+    	</section>
+	}
+
+
+
+
+
+
+
+<partial name="_ContactPartial" />

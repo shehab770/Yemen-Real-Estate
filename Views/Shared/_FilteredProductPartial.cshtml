@@ -1,0 +1,236 @@
+﻿@using Newtonsoft.Json;
+@using System.Reflection;
+@using System.ComponentModel.DataAnnotations;
+@model webProgramming.Models.ViewModels;
+
+@{
+    var pageSize = 5;
+    var currentPage = Context.Request.Query["page"].ToString();
+    var page = 1;
+    if (!string.IsNullOrEmpty(currentPage))
+    {
+        page = int.Parse(currentPage);
+    }
+
+    // ✅ مصدر واحد للبيانات (مفلترة أو الكل)
+    var sourceList = Model.FilteredProducts ?? Model.Products;
+    var totalPages = (int)Math.Ceiling((sourceList?.Count() ?? 0) / (double)pageSize);
+}
+
+<section class="tf-section2 flat-property flat-property-list flat-property-list1 flat-properties-rent wg-dream style5">
+    <div class="container6">
+        <div class="row flex">
+            <div class="post">
+                <div class="category-filter flex align-center justify-space">
+                    <div class="box-1 flex align-center">
+                        <div class="heading-listing fs-30 lh-45 fw-7">نتائج البحث</div>
+                        <div class="heading-text">يوجد حالياً @(sourceList?.Count() ?? 0) عقارات.</div>
+                    </div>
+                </div>
+
+                @if(sourceList != null && sourceList.Any())
+                {
+                    <div class="wrap-item form-wg flex flex-wrap">
+                        @foreach(var item in sourceList.OrderBy(p => p.FavorCount)
+                            .Skip((page-1) * pageSize)
+                            .Take(pageSize))
+                        {
+                            var properties = JsonConvert.DeserializeObject<Dictionary<string,string>>(item.Properties ?? "{}");
+                            var listingImages = JsonConvert.DeserializeObject<List<string>>(item.ListingImages ?? "[]");
+
+                            <div class="box box-dream flex hv-one wg-box">
+                                <div class="image-group relative">
+                                    @* ✅ حالة العقار *@
+                                    @if((int)item.isAccepted == 1)
+                                    {
+                                        <span class="featured fs-12 fw-6" style="background:#4CAF50;color:#fff;">مميز</span>
+                                    }
+                                   
+
+                                    @{
+                                        var typeDisplayName = item.Type.GetType()
+                                            .GetMember(item.Type.ToString())
+                                            .First()
+                                            .GetCustomAttribute<DisplayAttribute>()?.Name 
+                                            ?? item.Type.ToString();
+                                    }
+                                    <span class="featured style fs-12 fw-6">لل @typeDisplayName</span>
+                                    <span class="icon-bookmark"><i class="far fa-bookmark"></i></span>
+
+                                    <div class="swiper-container noo carousel-2 img-style">
+                                        <a href="/Home/PropDetail/@item.ProductId" class="icon-plus">
+                                            <img src="~/assets/images/icon/plus.svg" alt="images">
+                                        </a>
+                                        <div class="swiper-wrapper">
+                                            @if(!string.IsNullOrEmpty(item.MainImage))
+                                            {
+                                                <div class="swiper-slide"><img src="@item.MainImage" alt="Main image"></div>
+                                            }
+                                            @if(listingImages != null)
+                                            {
+                                                @foreach(var image in listingImages)
+                                                {
+                                                    if(!string.IsNullOrEmpty(image) && image != item.MainImage)
+                                                    {
+                                                        <div class="swiper-slide"><img src="@image" alt="images"></div>
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                        <div class="pagi2"><div class="swiper-pagination2"></div></div>
+                                        <div class="swiper-button-next2"><i class="fal fa-arrow-right"></i></div>
+                                        <div class="swiper-button-prev2"><i class="fal fa-arrow-left"></i></div>
+                                    </div>
+                                </div>
+
+                                <div class="content">
+                                    <h3 class="link-style-1">
+                                        <a href="/Home/PropDetail/@item.ProductId">@(item.Title ?? "عنوان العقار")</a>
+                                    </h3>
+                                    <div class="text-address"><p class="p-12">@item.Address</p></div>
+                                    <div class="money fs-20 fw-8 font-2 text-color-3">
+                                        <a href="/Home/PropDetail/@item.ProductId">$@item.Price</a>
+                                    </div>
+                                    <div class="icon-box">
+                                        <div class="icons icon-1 flex"><span>غرف النوم: </span><span class="fw-6">@properties.GetValueOrDefault("bedrooms_num")</span></div>
+                                        <div class="icons icon-2 flex"><span>الحمامات: </span><span class="fw-6">@properties.GetValueOrDefault("bathrooms_num")</span></div>
+                                        <div class="icons icon-3 flex"><span>المساحة (قدم مربع): </span><span class="fw-6">@properties.GetValueOrDefault("prop_size")</span></div>
+                                    </div>
+
+                                    <!-- زر المميزات -->
+                                    <div class="amenities-section mt-2">
+                                        <button class="btn btn-outline-primary btn-sm" type="button" onclick="toggleAmenities('amenitiesBox-@item.ProductId')">المميزات</button>
+                                        <div id="amenitiesBox-@item.ProductId" class="d-none mt-2">
+                                            <div class="row">
+                                                @{
+                                                    var anyAmenity = false;
+                                                    foreach (var amenity in Model.Amenities)
+                                                    {
+                                                        if (properties.ContainsKey(amenity.FeatureName) && properties[amenity.FeatureName] == "1")
+                                                        {
+                                                            anyAmenity = true;
+                                                            <div class="col-12 col-md-6 mb-2">
+                                                                <span style="display:inline-block;background:#FFF5E0;font-size:13px;border-radius:9px;padding:2px 10px;">
+                                                                    <i class="@amenity.IconClass me-1 text-primary"></i> @amenity.DisplayName
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                    }
+                                                    if (!anyAmenity)
+                                                    {
+                                                        <div class="col-12"><span class="text-muted">لا توجد مميزات متاحة لهذا العقار</span></div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="img-box flex justify-space align-center">
+                                        <div class="img-author flex align-center">
+                                            <img src="@(Model.Sellers?.FirstOrDefault(s=> s.UserId == item.SellerId)?.Image ?? "~/assets/images/author/author-31.jpg")" alt="images">
+                                             <a class="compare flex align-center fw-6" href="#">
+        @{
+            var seller = Model.Sellers?.FirstOrDefault(s => s.UserId == item.SellerId);
+        }
+        @(seller?.Name ?? "NestHood")
+        @if(seller?.IsVerified == true)
+        {
+            <span class="verified-badge" title="موثق">
+                <i class="fas fa-check-circle"></i>
+            </span>
+        }
+    </a>
+                                        </div>
+                                        <button class="btn favorite-btn" onclick="toggleFavorite('@item.ProductId')" id="favorite-@item.ProductId" style="background-color: transparent; border: none;">
+                                            <i class="@(Model.Favors?.FirstOrDefault(f => f.ProductId == item.ProductId && f.UserId == Model.User?.UserId) != null ? "fas" : "far") fa-heart"
+                                               style="cursor: pointer; font-size: 22px; transition: all 0.3s ease; color: #4CAF50; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));"></i>
+                                        </button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- ✅ Pagination -->
+                    
+                 
+                }
+                @{
+    var query = Context.Request.Query
+        .Where(q => q.Key != "page")
+        .Select(q => $"{q.Key}={q.Value}")
+        .ToList();
+
+    string queryString = query.Any()
+        ? "&" + string.Join("&", query)
+        : "";
+}
+
+
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function toggleAmenities(boxId) {
+        const box = document.getElementById(boxId);
+        box.classList.toggle("d-none");
+    }
+</script>
+
+<style>
+    .item-title input[type="radio"] { display: none;}
+    .property-option {
+        background-color: #FFF5E0;
+        padding: 15px 30px;
+        cursor: pointer;
+        display: inline-block;
+        padding-right: 55px;
+        border-top-left-radius: 24px;
+        transition: all 0.6s ease;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        color: #000;
+        position: relative;
+    }
+    .realty-card {
+        transition: box-shadow .14s,transform .16s;
+        position:relative;
+    }
+    .realty-card:hover { box-shadow:0 5px 24px rgba(53,124,86,0.12); transform:translateY(-4px);}
+    .realty-card .fa-heart.fas { color:#e3342f !important; }
+    .realty-card .fa-heart.far { color:#aaa !important; }
+
+    .badge-featured {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        background: #FFA920;
+        color: #fff;
+        padding: 3px 12px;
+        border-radius: 13px;
+        font-size: 13px;
+        font-weight: bold;
+        z-index: 2;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        letter-spacing: 1px;
+    }
+    .badge-status {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: #38b000;
+        color: #fff;
+        padding: 3px 10px;
+        border-radius: 13px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 2;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+        letter-spacing: 1px;
+    }
+    .container6 { padding-left: 16px; padding-right: 16px; }
+    .wrap-item { direction:ltr!important; }
+</style>

@@ -1,0 +1,39 @@
+@model webProgramming.Models.ViewModels;
+@{
+    ViewData["Title"] = "Page Not Found";
+    Layout = "_MyLayout";
+}
+
+<section class="flat-title">
+    <div class="container">
+        <div class="row">                      
+            <div class="col-lg-12">
+                <div class="title-inner style">
+                    <div class="title-group fs-12">
+                        <a class="home fw-6 text-color-3" href="/">Home</a>
+                        <span>Page Not Found</span>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</section>
+
+<section class="flat-about">
+    <div class="container">
+        <div class="row">                      
+            <div class="col-lg-12">
+                <div class="heading-about text-center">
+                    <h1 class="fw-7">404</h1>
+                    <h2 class="fw-6">الصفحة غير موجود</h2>
+                    <p>قد تكون الصفحة التي تبحث عنها قد أُزيلت، أو تم تغيير اسمها، أو أنها غير متاحة مؤقتًا.</p>
+                    <a href="/" class="sc-button btn-icon">
+                        <span>الرجوع الى الرئيسية</span>
+                    </a>
+                </div>
+            </div>  
+        </div>
+    </div>
+</section>
+
+<partial name="_ContactPartial" />

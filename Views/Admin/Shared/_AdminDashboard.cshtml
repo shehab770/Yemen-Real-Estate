@@ -1,0 +1,184 @@
+<div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="@(Model.User.Image)" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+            <a href="/Admin/AdminProfile" class="d-block">@Model.User.Name</a>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 with font-awesome or any other icon font library -->
+
+                <li class="nav-item has-treeview menu-open">
+                    <a href="/Admin/Index" class="nav-link active">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            لوحة التحكم
+                        </p>
+                    </a>
+                </li>
+
+                 <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                            المستخدمين
+                             <i class="fas fa-angle-left right"></i>
+                            <span class="badge badge-info right">@(ViewBag.UserCount ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/ShowSellers" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>البائعين</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/ShowBuyers" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>المشترين</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="/Admin/ShowProperties" class="nav-link">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            العقارات
+                             <i class="fas fa-angle-left right"></i>
+                            <span class="badge badge-info right">@(ViewBag.PropertyCount ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/ShowProperties" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>جميع العقارات</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/ShowProperties?status=Approved" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المعتمدة</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/FeaturedProperties" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المميزة</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/ShowProperties?status=Rejected" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>العقارات المرفوضة</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                 <li class="nav-item has-treeview">
+                    <a href="/Admin/AboutUs" class="nav-link">
+                        <i class="nav-icon fas fa-info"></i>
+                        <p>
+                           من نحن
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-newspaper"></i>
+                        <p>
+                            المقالات
+                            <i class="fas fa-angle-left right"></i>
+                        <span class="badge badge-info right">@(ViewBag.ArticlesCount ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/ShowArticles" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>جميع المقالات</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/ShowArticles?status=true" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>المقالات المنشورة</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/Admin/ShowArticles?status=false" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>المقالات غير المنشورة</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            الرسائل
+                            <i class="fas fa-angle-left right"></i>
+                        <span class="badge badge-warning right">@(ViewBag.ContactCount ?? " ")</span>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/Contacts" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>اتصل بنا</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user-cog"></i>
+                        <p>
+                            الحساب
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/AdminProfile" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>ملفي الشخصي</p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="/Admin/Settings" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>الإعدادات</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            <li class="nav-item">
+                <form asp-controller="Auth" asp-action="Logout" method="post" class="nav-link">
+                    <button type="submit" class="btn btn-link nav-link text-danger">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>تسجيل الخروج</p>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>

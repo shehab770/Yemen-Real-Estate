@@ -1,0 +1,140 @@
+@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "My Articles";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Seller/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+        style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Articles</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Admin/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">المقالات</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            @{
+             if (TempData["Success"] != null)
+             {
+                 <div class="alert alert-success">
+                     @TempData["Success"]
+                 </div>
+             }
+         }
+         @{
+             if (TempData["Failed"] != null)
+             {
+                 <div class="alert alert-danger">
+                     @TempData["Failed"]
+                 </div>
+             }
+         }
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">قائمة المقالات</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @if (Model.Articles != null)
+                                {
+                                    foreach (var article in Model.Articles)
+                                    {
+                                        <div class="col-md-4 mb-4">
+                                            <div class="card h-100">
+                                                <img src="@article.Image" class="card-img-top" alt="@article.Title" style="height: 200px; object-fit: cover;">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">@article.Title</h5>
+                                                    <p class="card-text text-muted">
+                                                        <small>
+                                                            <i class="fas fa-calendar"></i> @article.CreatedAt.ToString("MMM dd, yyyy")
+                                                            <br>
+                                                            <i class="fas fa-home"></i> @article.HouseType
+                                                        </small>
+                                                    </p>
+                                                    <p class="card-text">@(article.Content?.Length > 100 ? article.Content.Substring(0, 100) + "..." : article.Content)</p>
+                                                </div>
+                                                <div class="card-footer bg-transparent">
+                                                    <div class="btn-group w-100">
+                                                        @if(article.IsPublished == false)
+                                                        {
+                                                            <a href="/Admin/ToggleArticleStatus/@article.Id" class="btn btn-success btn-sm">
+                                                                <i class="fas fa-check"></i>     نشر  
+                                                            </a>
+                                                        }else
+                                                        {
+                                                            <a href="/Admin/ToggleArticleStatus/@article.Id" class="btn btn-danger btn-sm">
+                                                                <i class="fas fa-check"></i>    إلغاء النشر
+                                                            </a>
+                                                        }
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(@article.Id)">
+                                                            <i class="fas fa-trash"></i> حذف
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-12">
+                                        <div class="alert alert-info">
+                                            لا توجد مقالات. <a href="/Articals/Add">أنشئ مقالتك الأولى</a>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Articals/Delete/${id}`;
+                }
+            });
+        }
+    </script>
+} 

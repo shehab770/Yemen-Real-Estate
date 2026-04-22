@@ -1,0 +1,55 @@
+@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "About Us";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Admin/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name</span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m-0">About Us</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="/Admin/UpdateAboutUs" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="image">About Us Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                        </div>
+                        @if(Model.AboutUs?.Image != null)
+                        {
+                            <img src="@Model.AboutUs?.Image" alt="About Us Image" class="img-fluid mb-3">
+                        }
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="5">@(Model.AboutUs?.Description ?? string.Empty)</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

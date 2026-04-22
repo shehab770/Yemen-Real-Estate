@@ -1,0 +1,163 @@
+@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "إدارة البائعين";
+    Layout = "Admin_Layout";
+}
+
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Admin/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name</span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <!-- Content Header -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">إدارة البائعين</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/Admin/Index">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">البائعين</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+
+            <!-- Sellers List Card -->
+            <div class="card">
+                <div class="card-header bg-gradient-info">
+                    <h3 class="card-title text-white">
+                        <i class="fas fa-user-tie"></i> قائمة البائعين
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>البائع</th>
+                                    <th>البريد الإلكتروني</th>
+                                    <th>العقارات</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الانضمام</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Sellers != null)
+                                {
+                                    @foreach (var seller in Model.Sellers)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="@seller.Image" class="img-circle mr-2" alt="Seller" style="width: 40px; height: 40px;">
+                                                    <div>
+                                                        <div class="font-weight-bold">@seller.Name</div>
+                                                        <small class="text-muted">@seller.Phone</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@seller.Email</td>
+                                            <td>
+                                                @{
+                                                    var propertyCount = Model.Products?.Count(p => p.SellerId == seller.UserId) ?? 0;
+                                                }
+                                                <span class="badge badge-info">@propertyCount عقارات</span>
+                                            </td>
+                                            <td>
+                                                @if (seller.IsBlocked == false)
+                                                {
+                                                    <span class="badge badge-success">نشط</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">محظور</span>
+                                                }
+                                            </td>
+                                            <td>@seller.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="/Seller/SellerProfile/@seller.UserId" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye"></i> التفاصيل
+                                                    </a>
+                                                    <form action="/Admin/ToggleUserStatus" method="post" style="display: inline;">
+                                                        <input type="hidden" name="userId" value="@seller.UserId">
+                                                        <input type="text" name="blockReason" value="@(seller.BlockReason ?? "")" placeholder="أدخل سبب الحظر">
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('هل أنت متأكد من هذا الإجراء؟')">
+                                                            <i class="fas fa-@(seller.IsBlocked == false ? "ban" : "check")"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="alert alert-info mb-0">
+                                                <i class="fas fa-info-circle"></i> لا يوجد بائعين.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @if (Model.Sellers != null && Model.Sellers.Any())
+                {
+                    <div class="card-footer clearfix">
+                        <ul class="pagination pagination-sm m-0 float-right">
+                            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</div>

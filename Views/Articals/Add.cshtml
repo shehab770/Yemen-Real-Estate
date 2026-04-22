@@ -1,0 +1,180 @@
+@model webProgramming.Models.ViewModels
+
+@{
+    ViewData["Title"] = "إضافة مقالة";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Seller/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+        style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name </span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="_AgnetDahboardPartial" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Add New Article</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/Seller/ShowArticles">Articles</a></li>
+                        <li class="breadcrumb-item active">Add New</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+         @{
+             if (TempData["Success"] != null)
+             {
+                 <div class="alert alert-success">
+                     @TempData["Success"]
+                 </div>
+             }
+         }
+         @{
+             if (TempData["Failed"] != null)
+             {
+                 <div class="alert alert-danger">
+                     @TempData["Failed"]
+                 </div>
+             }
+         }
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Article Information</h3>
+                        </div>
+                        <form role="form" method="POST" asp-action="Store" asp-controller="Articals" enctype="multipart/form-data">
+                            <div class="card-body">
+                                <input type="hidden" name="sellerId" value="@Model.User?.UserId">
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="meta_title">Meta Title</label>
+                                            <input type="text" class="form-control" id="meta_title" name="meta_title" placeholder="Enter meta title" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="meta_description">Meta Description</label>
+                                            <input type="text" class="form-control" id="meta_description" name="meta_description" placeholder="Enter meta description" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="title">Article Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" placeholder="Enter article title" required>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="houseType">House Type</label>
+                                            <select class="form-control select2" id="houseType" name="houseType" required>
+                                                <option value="">Select House Type</option>
+                                                @foreach(ArticleHouseType type in Enum.GetValues(typeof(ArticleHouseType)))
+                                                {
+                                                        <option value="@((int)type)">@type</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="image">Article Image</label>
+                                            <div class="input-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="image" name="image" accept="image/*">
+                                                    <label class="custom-file-label" for="image">Choose file</label>
+                                                </div>
+                                            </div>
+                                            <small class="form-text text-muted">Supported formats: JPG, PNG, GIF</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>City</label>
+                                            <select name="CityId" id="citySelect" class="form-control select2" required>
+                                                <option value="">Select City</option>
+                                                @if(Model.Cities != null)
+                                                {
+                                                    @foreach (var item in Model.Cities)
+                                                    {
+                                                        <option value="@item.Id">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Neighborhood</label>
+                                            <select name="NeighbId" id="neighbSelect" class="form-control select2" required>
+                                                <option value="">Select Neighborhood</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="content">Content</label>
+                                    <textarea class="form-control" id="content" name="content" rows="12" style="min-height: 300px;" required></textarea>
+                                    <small class="form-text text-muted">Feel free to write a detailed description of your article</small>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Submit Article
+                                </button>
+                                <a href="/Seller/ShowArticles" class="btn btn-default float-right">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ScriptsPartial" />
+    <script>
+        // Initialize Select2
+        $(document).ready(function() {
+            $('.select2').select2({
+                theme: 'bootstrap4'
+            });
+
+            // Custom file input
+            $('input[type="file"]').on('change', function() {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        });
+    </script>
+}

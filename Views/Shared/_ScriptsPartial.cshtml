@@ -1,0 +1,266 @@
+@* Required Scripts *@
+
+    @* js for Selecting the City *@
+    <script>
+        const neighborhoods = [
+                @foreach (var neighb in @Model.Neighbs)
+            {
+                <text>
+                    {id: @neighb.Id, name: @Html.Raw(Json.Serialize(neighb.Name)), cityId: @neighb.CityId },
+                </text>
+                }
+                ];
+
+        document.getElementById('citySelect').addEventListener('change', function () {
+            const selectedCityId = this.value;
+             console.log('Selected city ID:', selectedCityId); 
+            const neighbSelect = document.getElementById('neighbSelect');
+
+            // Clear previous neighborhoods and show "Loading..." while updating
+            neighbSelect.innerHTML = '<option disabled selected>Loading...</option>';
+
+        if (selectedCityId) {
+            // Simulate slight delay for better user experience
+            setTimeout(function () {
+                // Now clear again and add real neighborhoods
+                neighbSelect.innerHTML = '<option value="">Select Neighborhood</option>';
+
+                const filteredNeighbs = neighborhoods.filter(n => n.cityId == selectedCityId);
+
+                filteredNeighbs.forEach(function (neighb) {
+                    const option = document.createElement('option');
+                    option.value = neighb.id;
+                    option.textContent = neighb.name;
+                    neighbSelect.appendChild(option);
+                });
+            }, 300); // 300 milliseconds (feel free to adjust)
+        } else {
+            // If no city selected, clear neighborhoods
+            neighbSelect.innerHTML = '<option value="">Select Neighborhood</option>';
+        }
+    });
+
+    </script>
+
+    @* js for displaying the array images *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            bsCustomFileInput.init();
+
+            const arrayImages = document.getElementById('arrayImages');
+            const preview = document.getElementById('previewListingImages');
+            const arrayImagesJson = document.getElementById('arrayImagesJson');
+            let totalImages = []; // Store selected files
+
+            arrayImages.addEventListener('change', function (event) {
+                const newFiles = Array.from(event.target.files);
+
+                @* if (totalImages.length + newFiles.length > 4) {
+                    alert('You can upload a maximum of 4 images total.');
+                    arrayImages.value = '';
+                    return;
+                } *@
+
+                totalImages = totalImages.concat(newFiles);
+
+                // Clear the preview and re-render all images
+                preview.innerHTML = '';
+
+                // Create an array to store image data
+                const imageData = [];
+
+                totalImages.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const col = document.createElement('div');
+                        col.className = 'col-sm-3 mb-3';
+
+                        col.innerHTML = `
+                                                <div class="card">
+                                                    <img src="${e.target.result}" class="card-img-top img-fluid" alt="Listing Image">
+                                                    <div class="card-body">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeImage(${index})">Remove</button>
+                                                    </div>
+                                                </div>
+                                            `;
+                        preview.appendChild(col);
+
+                        // Add image data to array
+                        imageData.push({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: e.target.result
+                        });
+
+                        // Update hidden input with JSON data
+                        arrayImagesJson.value = JSON.stringify(imageData);
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                // Reset the input so user can add more images again
+                arrayImages.value = '';
+            });
+
+            // Function to remove an image
+            window.removeImage = function (index) {
+                totalImages.splice(index, 1);
+                const imageData = totalImages.map(file => ({
+                    name: file.name,
+                    type: file.type,
+                    size: file.size
+                }));
+                arrayImagesJson.value = JSON.stringify(imageData);
+
+                // Re-render preview
+                const event = new Event('change');
+                arrayImages.dispatchEvent(event);
+            };
+        });
+    </script>
+
+    @* js for rent duration *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const propertyTypeSelect = document.getElementById('propertyType');
+            const rentalSelect = document.getElementById('rentalPeriod');
+            
+            // Function to handle the disabled state
+            function updateRentalSelectState() {
+                if (propertyTypeSelect.value === '1') { // Sell
+                    rentalSelect.disabled = true;
+                    rentalSelect.value = '0'; // Set to Selling
+                } else { // Rent
+                    rentalSelect.disabled = false;
+                }
+            }
+
+            // Set initial state
+            updateRentalSelectState();
+
+            // Handle changes
+            propertyTypeSelect.addEventListener('change', updateRentalSelectState);
+        });
+    </script>
+
+    @* js-letters code for Properity Activiting hover class for EstateType *@
+    <script>
+        function setActiveTab(element) {
+            // Remove active class from all tabs
+            document.querySelectorAll('#propertyTabs li').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Add active class to clicked tab
+            element.classList.add('active');
+        }
+    </script>
+
+
+	<script>
+		$(document).ready(function () {
+			// Toggle Advanced Search
+			$('#show_advbtn').click(function () {
+				$('#advancedSearch').slideToggle();
+			});
+
+			// Initialize Price Range Slider
+			$("#priceSlider").slider({
+				range: true,
+				min: 0,
+				max: 1000000,
+				values: [0, 1000000],
+				slide: function (event, ui) {
+					$("#minPrice").val(ui.values[0]);
+					$("#maxPrice").val(ui.values[1]);
+					$("#priceRange").text("$" + ui.values[0] + " - $" + ui.values[1]);
+				}
+			});
+
+			// Initialize Select Pickers
+			$('.selectpicker').selectpicker();
+		});
+	</script>
+
+    @* js for toggling the favorite icon without refreshing the page *@
+    <script>
+        function toggleFavorite(productId) {
+            $.ajax({
+                url: '/Home/ToggleFavorite',
+                type: 'POST',
+                data: { productId: productId },
+                success: function(response) {
+                    if (response.success) {
+                        // Update icon immediately before showing alert
+                        const icon = $(`#favorite-${productId} i`);
+                        if (response.isFavorited) {
+                            icon.removeClass('far').addClass('fas');
+                        } else {
+                            icon.removeClass('fas').addClass('far'); 
+                        }
+                        
+                        Swal.fire({
+                            title: response.title,
+                            text: response.message,
+                            icon: response.icon || 'success',
+                            allowOutsideClick: true,
+                            backdrop: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: response.title || 'Authentication Required',
+                            text: response.message || 'Please login to add favorites',
+                            icon: response.icon || 'warning',
+                            allowOutsideClick: true,
+                            backdrop: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while updating favorites',
+                        icon: 'error',
+                        allowOutsideClick: true,
+                        backdrop: true,
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+    </script>   
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const options = document.querySelectorAll(".property-option");
+
+        function updateStyles() {
+            options.forEach(option => {
+                const input = option.querySelector('input[type="radio"]');
+                if (input.checked) {
+                    option.style.backgroundColor = "#FFA920";
+                    option.style.color = "white";
+                } else {
+                    option.style.backgroundColor = "#FFF5E0";
+                    option.style.color = "black";
+                }
+            });
+        }
+
+        // Initial load
+        updateStyles();
+
+        options.forEach(option => {
+            option.addEventListener("click", function () {
+                const input = option.querySelector('input[type="radio"]');
+                input.checked = true;
+                updateStyles();
+            });
+        });
+    });
+    </script>

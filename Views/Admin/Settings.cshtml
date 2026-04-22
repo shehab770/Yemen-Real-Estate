@@ -1,0 +1,97 @@
+@model webProgramming.Models.ViewModels
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Settings";
+    Layout = "Admin_Layout";
+}
+
+<aside style="left:0;" class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="/Admin/Index" class="brand-link">
+        <img src="@Model.User?.Image" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+             style="opacity: .8">
+        <span class="brand-text font-weight-light">@Model.User?.Name</span>
+    </a>
+
+    <!-- Sidebar -->
+    <Partial name="~/Views/Admin/Shared/_AdminDashboard.cshtml" />
+    <!-- /.sidebar -->
+</aside>
+
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <h1 class="m-0"> صفحة الإعدادات</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="/Admin/UpdateSettings" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="siteAddress">عنوان الموقع</label>
+                            <input type="text" class="form-control" id="siteAddress" name="siteAddress" value="@(Model.Settings?.SiteAddress ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="siteEmail">بريد الموقع</label>
+                            <input type="email" class="form-control" id="siteEmail" name="siteEmail" value="@(Model.Settings?.SiteEmail ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="sitePhone">هاتف الموقع</label>
+                            <input type="tel" class="form-control" id="sitePhone" name="sitePhone" value="@(Model.Settings?.SitePhone ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="LogoImage">صورة الشعار</label>
+                            <input type="file" class="form-control" id="LogoImage" name="LogoImage" accept="image/*">
+                        </div>
+                       @if(Model.Settings?.LogoImage != null)
+                       {
+                        <img src="@Model.Settings?.LogoImage" alt="Logo Image" class="img-fluid mb-3">
+                       }
+                        <div class="form-group">
+                            <label for="FooterLogoImage">صورة لوغو الفوتر</label>
+                            <input type="file" class="form-control" id="FooterLogoImage" name="FooterLogoImage" accept="image/*">
+                        </div>
+                        @if(Model.Settings?.FooterLogoImage != null)
+                        {
+                            <img src="@Model.Settings?.FooterLogoImage" alt="Footer Logo Image" class="img-fluid mb-3">
+                        }
+                        
+                        <h5 class="mt-4 mb-3">روابط التواصل الاجتماعي</h5>
+                        @{
+                            var Links = JsonConvert.DeserializeObject<dynamic>(Model.Settings?.SocialMediaLink ?? "{}");
+                        }
+                        <div class="form-group">
+                            <label for="facebookLink">رابط فيسبوك</label>
+                            <input type="url" class="form-control" id="facebookLink" name="facebookLink" value="@(Links.facebook ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitterLink">رابط تويتر</label>
+                            <input type="url" class="form-control" id="twitterLink" name="twitterLink" value="@(Links.twitter ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="instagramLink">رابط إنستغرام</label>
+                            <input type="url" class="form-control" id="instagramLink" name="instagramLink" value="@(Links.instagram ?? string.Empty)">
+                        </div>
+                        <div class="form-group">
+                            <label for="whatsappLink">رابط واتساب</label>
+                            <input type="tel" class="form-control" id="whatsappLink" name="whatsappLink" value="@(Links.whatsapp ?? string.Empty)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="copyrightText">نص حقوق الطبع والنشر</label>
+                            <input type="text" class="form-control" id="copyrightText" name="copyrightText" value="@(Model.Settings?.CopyrightText ?? string.Empty)">
+                        </div>
+                        <button type="submit" class="btn btn-primary">تحديث الإعدادات</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

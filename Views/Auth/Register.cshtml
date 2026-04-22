@@ -1,0 +1,156 @@
+﻿@*
+    لمزيد من المعلومات حول تفعيل MVC للمشاريع الفارغة، قم بزيارة https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "تسجيل حساب";
+    Layout = "~/Views/Auth/Shared/Login_RegisterLayout.cshtml";
+}
+
+<div class="register-page-wrapper">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="register-box">
+                    <div class="wrap-modal">
+                        <div class="images">
+                            <!-- إزالة الشعار المكرر -->
+                            <img src="~/assets/images/logo/logo%402x.png" alt="شعار" class="main-logo">
+                        </div>
+                        <div class="content">
+                            <div class="title-login text-center mb-4">إنشاء حساب</div>
+                            <div class="account-type-selection">
+                                <h4 class="text-center mb-4">اختر نوع حسابك</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <form asp-action="BuyerRegister" asp-controller="Auth">
+                                            <button type="submit" class="account-type-btn w-100">
+                                                <div class="account-type-card">
+                                                    <div class="icon-wrapper">
+                                                        <i class="fas fa-home fa-3x"></i>
+                                                    </div>
+                                                    <h5>مشتري عقار</h5>
+                                                    <p class="mb-0">ابحث عن عقارك المثالي</p>
+                                                </div>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <form asp-action="SellerRegister" asp-controller="Auth">
+                                            <button type="submit" class="account-type-btn w-100">
+                                                <div class="account-type-card">
+                                                    <div class="icon-wrapper">
+                                                        <i class="fas fa-store fa-3x"></i>
+                                                    </div>
+                                                    <h5>بائع عقار</h5>
+                                                    <p class="mb-0">أضف عقاراتك للإعلان</p>
+                                                </div>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .register-page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background-color: #f8f9fa;
+        padding: 40px 0;
+    }
+
+    .register-box {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .wrap-modal {
+        display: flex;
+        background: white;
+    }
+
+    .images {
+        position: relative;
+        width: 40%;
+        background: #2d3954;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .images img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .content {
+        width: 60%;
+        padding: 40px;
+    }
+
+    .title-login {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3954;
+        margin-bottom: 10px;
+    }
+
+    .account-type-selection {
+        text-align: center;
+    }
+
+    .account-type-card {
+        background: #fff;
+        border: 2px solid #e5e5e5;
+        border-radius: 10px;
+        padding: 30px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .account-type-card:hover {
+        border-color: #2d3954;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .icon-wrapper {
+        color: #2d3954;
+        margin-bottom: 15px;
+    }
+
+    .account-type-card h5 {
+        color: #2d3954;
+        margin-bottom: 10px;
+    }
+
+    .account-type-card p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+
+    @@media (max-width: 991px) {
+        .wrap-modal {
+            flex-direction: column;
+        }
+
+        .images, .content {
+            width: 100%;
+        }
+
+        .images {
+            padding: 20px;
+        }
+    }
+</style>

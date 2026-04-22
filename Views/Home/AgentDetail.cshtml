@@ -1,0 +1,191 @@
+@model webProgramming.Models.ViewModels;
+@using Newtonsoft.Json;
+@{
+    ViewData["Title"] = @Model.Seller?.Name;
+     Layout = "_Mylayout";
+}
+
+
+
+    <section class="flat-title " >
+        <div class="container">
+            <div class="row">                      
+                <div class="col-lg-12">
+                    <div class="title-inner style">
+                        <div class="title-group fs-12"><a class="home fw-6 text-color-3" href="/">Home</a><span >@Model.Seller?.Name</span></div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </section>
+            
+            <section class="flat-agent-detail wg-tabs flat-agent flat-agent-sidebar " >
+                <div class="container">
+                    <div class="row flex">                      
+                        <div class="col-lg-8">
+                            <div class="post">
+                            <div class="box flex ">
+                                <div class="images relative flex-none ">
+                                    <img src="@Model.Seller?.Image" alt="images">
+                                </div>
+                                <div class="content ">
+                                    <div class="titles fs-22 fw-7 lh-33">@Model.Seller?.Name</div>
+                                    <div class="icon-group">
+                                        <div class="icon-phone link-style-1"><a href="tel:@Model.Seller?.Phone" class=" fw-7 font-2 text-color-3">@Model.Seller?.Phone</a></div>
+                                        <div class="icon-email"><a href="mailto:@Model.Seller?.Email" class="font-2 ">@Model.Seller?.Email</a></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="flat-tabs">
+                                <div class="box-tab">
+                                    <ul class="menu-tab tab-title flex ">
+                                        <li class="item-title active">
+                                            <h3 class="inner">About @Model.Seller?.Name</h3>
+                                        </li>
+                                    </ul>
+                                </div>
+                               
+                                <div class="content-tab">
+                                    <div class="content-inner tab-content">   
+                                        <div class="wrap-item wg-dream flat-properties-rent">
+                                            @if(Model.Products != null)
+                                            {
+                                                @foreach(var item in Model.Products)
+                                                {
+                                                    var properties = JsonConvert.DeserializeObject<dynamic>(item.Properties);
+                                                    var listingImages = JsonConvert.DeserializeObject<dynamic>(item.ListingImages);
+
+                                                    <div class="box box-dream flex hv-one ">
+                                                        <div class="image-group relative ">
+                                                            <span class="featured fs-12 fw-6">Featured</span>    
+                                                            <span class="featured style fs-12 fw-6">For @item.Type</span>
+                                                            <span class="icon-bookmark"><i class="far fa-bookmark"></i></span> 
+                                                            <div class="swiper-container noo carousel-2 img-style" >    
+                                                                <a href="/Home/PropDetail/@item.ProductId" class="icon-plus"><img src="~/assets/images/icon/plus.svg" alt="images"></a>
+                                                                <div class="swiper-wrapper ">
+                                                                    @if(listingImages != null)
+                                                                    {
+                                                                        @foreach(var image in listingImages)
+                                                                        {
+                                                                            <div class="swiper-slide"><img src="@image" alt="images"></div>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                                <div class="pagi2"><div class="swiper-pagination2" >  </div> </div>
+                                                                <div class="swiper-button-next2 "><i class="fal fa-arrow-right"></i></div>
+                                                                <div class="swiper-button-prev2 "><i class="fal fa-arrow-left"></i> </div>                                        
+                                                            </div>
+                                                        </div>
+                                                        <div class="content">
+                                                            <h3 class="link-style-1"><a href="/Home/PropDetail/@item.ProductId">@(item.Title ?? "لا يوجد عنوان")</a> </h3>
+                                                            <div class="text-address"><p class="p-12">@item.Address</p></div>
+                                                            <div class="money fs-20 fw-8 font-2 text-color-3"><a href="/Home/PropDetail/@item.ProductId">$@item.Price</a></div>  
+                                                            <div class="icon-box">
+                                                                <div class="icons icon-1 flex"><span>Beds: </span><span class="fw-6">@properties?.bedrooms_num</span></div>
+                                                                <div class="icons icon-2 flex"><span>Baths: </span><span class="fw-6">@properties?.bathrooms_num</span></div>
+                                                                <div class="icons icon-3 flex"><span>Sqft: </span><span class="fw-6">@properties?.prop_size</span></div>
+                                                            </div>   
+                                                            <div class="img-box flex justify-space align-center">
+                                                            
+                                                                <div class="img-author flex align-center"><img src="@Model.Seller?.Image" alt="images"><div class="fs-13 fw-6 link-style-1"><a href="#">@Model.Seller?.Name</a></div> </div>
+                                                                <button class="btn favorite-btn" onclick="toggleFavorite('@item.ProductId')" id="favorite-@item.ProductId" style="background-color: transparent; border: none;">
+																	<i class="@(Model.Favors?.FirstOrDefault(f => f.ProductId == item.ProductId && f.UserId == Model.User?.UserId) != null ? "fas" : "far") fa-heart" style="cursor: pointer; font-size: 22px; transition: all 0.3s ease; color: #4CAF50; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));"></i>
+																</button>
+                                                            </div>                                           
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                        </div>  
+                        <div class="col-lg-4">
+                            <aside class="side-bar side-bar-1">
+                                <div class="inner-side-bar">                               
+                                    <div class="widget widget-listings style"> 
+                                        <h3 class="widget-title title-list">
+                                            Articles by @Model.Seller?.Name
+                                        </h3>                                                                                                                        
+                                        @if(Model.Articles != null)
+                                        {
+                                            foreach(var article in Model.Articles)
+                                            {
+                                               <div class="box-listings flex hover-img3">
+                                                    <div class="img-listings img-style3">
+                                                        <img style="width: 112px; height: 80px;" src="@article.Image" alt="images">
+                                                    </div>
+                                                    <div class="content link-style-1">
+                                                        <a class="fs-16 lh-24" href="/Home/ArticleDetail/@article.Id">@article.Title</a>
+                                                        <h4>Views:@article.ViewsCount</h4>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>                    
+                    </div>
+                </div>
+            </section>
+
+	<partial name="_ContactPartial" />
+            
+@section Scripts{
+    @* js for toggling the favorite icon without refreshing the page *@
+    <script>
+        function toggleFavorite(productId) {
+            $.ajax({
+                url: '/Home/ToggleFavorite',
+                type: 'POST',
+                data: { productId: productId },
+                success: function(response) {
+                    if (response.success) {
+                        // Update icon immediately before showing alert
+                        const icon = $(`#favorite-${productId} i`);
+                        if (response.isFavorited) {
+                            icon.removeClass('far').addClass('fas');
+                        } else {
+                            icon.removeClass('fas').addClass('far'); 
+                        }
+                        
+                        Swal.fire({
+                            title: response.title,
+                            text: response.message,
+                            icon: response.icon || 'success',
+                            allowOutsideClick: true,
+                            backdrop: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        Swal.fire({
+                            title: response.title || 'Authentication Required',
+                            text: response.message || 'Please login to add favorites',
+                            icon: response.icon || 'warning',
+                            allowOutsideClick: true,
+                            backdrop: true,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An error occurred while updating favorites',
+                        icon: 'error',
+                        allowOutsideClick: true,
+                        backdrop: true,
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        }
+    </script>   
+}
